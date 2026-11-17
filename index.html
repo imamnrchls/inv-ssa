@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Undangan Raka & Salsa</title>
+<title>Undangan Sifa & Yoga</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="description" content="Undangan pernikahan online">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -158,7 +158,7 @@ p { margin: 0; }
 .event hr { border: 0; border-top: 1px solid var(--line); margin: 14px 0; }
 .event dl { margin: 0 0 16px; display: grid; gap: 4px; font-size: 11.5px; }
 .event dl div { display: flex; justify-content: center; gap: 6px; flex-wrap: wrap; }
-.event dt { opacity: .75; } .event dd { margin: 0; }
+.event dt { opacity: .75; } .event dd { margin: 0; text-wrap: balance; }
 .stream { margin-top: 28px; border-radius: 18px; padding: 30px 22px; background: rgba(0,0,0,.3); border: 1px solid rgba(233,217,198,.12); }
 .stream .script { font-size: 46px; color: var(--gold); margin-bottom: 14px; }
 .stream p { font-size: 11.5px; }
@@ -403,30 +403,27 @@ footer { padding: 28px 24px calc(28px + env(safe-area-inset-bottom, 0px)); text-
    Foto: isi path/URL gambar (mis. "img/cover.jpg"). Kosongkan "" untuk placeholder.
    ===================================================================== */
 const CONFIG = {
-  groom: { nick: "Raka", full: "Raka Pratama", order: "Putra Pertama dari", parents: "Bapak Hendra & Ibu Lestari", ig: "", photo: "" },
-  bride: { nick: "Salsa", full: "Salsabila Putri", order: "Putri Kedua dari", parents: "Bapak Yusuf & Ibu Rahma", ig: "", photo: "" },
+  groom: { nick: "Yoga", full: "Yoga Refnu Pangestu", order: "Putra dari", parents: "Bapak Saefudin (Alm.) & Ibu Inih Tarsinih (Almh.)", ig: "", photo: "" },
+  bride: { nick: "Sifa", full: "Sifa Silfia Annurburhan", order: "Putri dari", parents: "Bapak Burhanudin & Ibu Yulianis", ig: "", photo: "" },
   brideFirst: true, // urutan tampil: mempelai wanita dulu (seperti referensi)
 
   // Tanggal utama untuk hitung mundur (zona waktu WIB = +07:00)
-  date: "2027-02-14T08:00:00+07:00",
+  date: "2026-12-27T10:00:00+07:00",
 
   events: [
-    { name: "Akad Nikah", start: "2027-02-14T08:00:00+07:00", time: "08.00 WIB – selesai", place: "Kediaman Mempelai Wanita", address: "Jl. Melati No. 12, Bandung", maps: "https://maps.google.com/?q=Bandung", photo: "" },
-    { name: "Resepsi",    start: "2027-02-14T11:00:00+07:00", time: "11.00 – 14.00 WIB",   place: "Kediaman Mempelai Wanita", address: "Jl. Melati No. 12, Bandung", maps: "https://maps.google.com/?q=Bandung", photo: "" }
+    { name: "Akad Nikah", start: "2026-12-27T10:00:00+07:00", time: "10.00 WIB – selesai", place: "Sakha Ballroom, Royal Sentul Park", address: "Jl. Sentul Raya, Kadumangu, Kec. Babakan Madang, Kabupaten Bogor, Jawa Barat 16810", maps: "https://www.google.com/maps/search/?api=1&query=Sakha+Ballroom+Royal+Sentul+Park", photo: "" },
+    { name: "Resepsi",    start: "2026-12-27T13:00:00+07:00", time: "13.00 – 17.00 WIB",   place: "Sakha Ballroom, Royal Sentul Park", address: "Jl. Sentul Raya, Kadumangu, Kec. Babakan Madang, Kabupaten Bogor, Jawa Barat 16810", maps: "https://www.google.com/maps/search/?api=1&query=Sakha+Ballroom+Royal+Sentul+Park", photo: "" }
   ],
-  stream: { when: "2027-02-14T08:00:00+07:00", url: "https://instagram.com/" }, // set null untuk menyembunyikan
+  // Live streaming: isi mis. { when: "2026-12-27T10:00:00+07:00", url: "https://instagram.com/..." }. null = disembunyikan.
+  stream: null,
 
-  story: [
-    { title: "Awal Cerita", when: "2018", text: "Berawal dari teman satu kampus, kami sering bertemu di sela kuliah hingga akhirnya memulai hubungan pada akhir 2018." },
-    { title: "Lamaran",     when: "Agustus 2026", text: "Dengan restu kedua keluarga, kami melangsungkan acara lamaran dan menetapkan hari pernikahan." },
-    { title: "Menikah",     when: "Februari 2027", text: "Insya Allah kami akan melangsungkan akad nikah dan resepsi pada hari Minggu, 14 Februari 2027." }
-  ],
+  // Love story: isi daftar { title, when, text }. Kosong [] = bagian Love Story disembunyikan.
+  story: [],
 
-  gifts: [
-    { type: "bank", brand: "BCA",  number: "1234567890", name: "Raka Pratama" },
-    { type: "bank", brand: "DANA", number: "081234567890", name: "Salsabila Putri" },
-    { type: "address", name: "Salsabila Putri", phone: "081234567890", address: "Jl. Melati No. 12, Bandung" }
-  ],
+  // Wedding gift: isi daftar rekening/alamat. Kosong [] = bagian Wedding Gift disembunyikan. Contoh:
+  // { type: "bank", brand: "BCA", number: "1234567890", name: "Sifa Silfia Annurburhan" },
+  // { type: "address", name: "Sifa", phone: "08xxxxxxxxxx", address: "Alamat lengkap" }
+  gifts: [],
 
   photos: { cover: "", side: "", hero: "", story: "", gift: "", wish: "" },
   gallery: ["", "", "", "", "", ""], // isi URL foto; jumlah bebas
@@ -453,10 +450,10 @@ async function copyText(text) {
 /* ---- names / dates ---- */
 const [A, B] = CONFIG.brideFirst ? [CONFIG.bride, CONFIG.groom] : [CONFIG.groom, CONFIG.bride];
 document.querySelectorAll("[data-mono]").forEach(n => { n.textContent = ""; n.append(A.nick[0], el("span"), B.nick[0]); n.setAttribute("aria-label", `${A.nick} dan ${B.nick}`); });
-const binds = { couple: `${CONFIG.groom.nick} & ${CONFIG.bride.nick}`, mainDate: fmtDay(CONFIG.date),
+const binds = { couple: `${A.nick} & ${B.nick}`, mainDate: fmtDay(CONFIG.date),
   streamWhen: CONFIG.stream ? `${fmtDay(CONFIG.stream.when)} · Pukul ${new Date(CONFIG.stream.when).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", timeZone: "Asia/Jakarta" })} WIB` : "" };
 document.querySelectorAll("[data-bind]").forEach(n => n.textContent = binds[n.dataset.bind]);
-document.title = `Undangan ${CONFIG.groom.nick} & ${CONFIG.bride.nick}`;
+document.title = `Undangan ${A.nick} & ${B.nick}`;
 document.querySelectorAll("[data-photo]").forEach(n => setPhoto(n, CONFIG.photos[n.dataset.photo]));
 
 /* ---- guest name: ?to=Nama+Tamu ---- */
@@ -473,6 +470,7 @@ function person(p, label) {
 $("#couple").append(person(A, CONFIG.brideFirst ? "Foto mempelai wanita" : "Foto mempelai pria"), el("p", "amp rv", "&"), person(B, CONFIG.brideFirst ? "Foto mempelai pria" : "Foto mempelai wanita"));
 
 /* ---- story ---- */
+if (!CONFIG.story.length) $("#story").closest("section").hidden = true;
 CONFIG.story.forEach(s => { const d = el("div", "rv"); d.append(el("span", "when", s.when), el("h4", null, s.title), el("p", null, s.text)); $("#story").append(d); });
 
 /* ---- events ---- */
@@ -517,6 +515,7 @@ CONFIG.gifts.forEach(g => {
   }
   c.append(copy); $("#giftCards").append(c);
 });
+if (!CONFIG.gifts.length) $("#gift").hidden = true;
 $("#giftToggle").addEventListener("click", e => { const box = $("#giftCards"); box.hidden = !box.hidden; e.currentTarget.setAttribute("aria-expanded", String(!box.hidden)); });
 
 /* ---- countdown ---- */
