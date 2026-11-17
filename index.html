@@ -157,6 +157,13 @@ p { margin: 0; }
 .event .day { font-weight: 600; letter-spacing: .06em; font-size: 12.5px; color: #fff; margin-top: 14px; text-transform: uppercase; }
 .event hr { border: 0; border-top: 1px solid var(--line); margin: 14px 0; }
 .event dl { margin: 0 0 16px; display: grid; gap: 4px; font-size: 11.5px; }
+.event .actions { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
+.cal { position: relative; }
+.cal summary { list-style: none; }
+.cal summary::-webkit-details-marker { display: none; }
+.cal-menu { position: absolute; z-index: 5; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); min-width: 190px; display: grid; gap: 2px; padding: 6px; border-radius: 10px; background: var(--cream); box-shadow: 0 12px 30px rgba(0,0,0,.45); }
+.cal-menu a, .cal-menu button { display: block; text-align: left; padding: 8px 10px; border-radius: 6px; border: 0; background: none; color: var(--cream-ink); font-size: 11.5px; text-decoration: none; cursor: pointer; white-space: nowrap; }
+.cal-menu a:hover, .cal-menu button:hover { background: rgba(74,15,28,.1); }
 .event dl div { display: flex; justify-content: center; gap: 6px; flex-wrap: wrap; }
 .event dt { opacity: .75; } .event dd { margin: 0; text-wrap: balance; }
 .stream { margin-top: 28px; border-radius: 18px; padding: 30px 22px; background: rgba(0,0,0,.3); border: 1px solid rgba(233,217,198,.12); }
@@ -264,6 +271,7 @@ footer { padding: 28px 24px calc(28px + env(safe-area-inset-bottom, 0px)); text-
   <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z" fill="currentColor"/></symbol>
   <symbol id="i-mail" viewBox="0 0 24 24"><path d="M3 5h18v14H3z M3 6l9 7 9-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
   <symbol id="i-gift" viewBox="0 0 24 24"><path d="M3 9h18v4H3zM5 13h14v8H5zM12 9v12M12 9S9 3 6.5 5 9 9 12 9zm0 0s3-6 5.5-4S15 9 12 9z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 10h18M8 3v4M16 3v4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
   <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="currentColor"/></symbol>
   <symbol id="i-disc" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="2.5" fill="currentColor"/><path d="M12 5a7 7 0 0 1 7 7" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".6"/></symbol>
   <symbol id="i-pause" viewBox="0 0 24 24"><path d="M7 5h3v14H7zM14 5h3v14h-3z" fill="currentColor"/></symbol>
@@ -412,8 +420,8 @@ const CONFIG = {
   date: "2026-12-27T10:00:00+07:00",
 
   events: [
-    { name: "Akad Nikah", start: "2026-12-27T10:00:00+07:00", time: "10.00 WIB – selesai", place: "Sakha Ballroom, Royal Sentul Park", address: "Jl. Sentul Raya, Kadumangu, Kec. Babakan Madang, Kabupaten Bogor, Jawa Barat 16810", maps: "https://www.google.com/maps/search/?api=1&query=Sakha+Ballroom+Royal+Sentul+Park", photo: { src: "img/siluet-2.jpg", pos: "68% 30%" } },
-    { name: "Resepsi",    start: "2026-12-27T13:00:00+07:00", time: "13.00 – 17.00 WIB",   place: "Sakha Ballroom, Royal Sentul Park", address: "Jl. Sentul Raya, Kadumangu, Kec. Babakan Madang, Kabupaten Bogor, Jawa Barat 16810", maps: "https://www.google.com/maps/search/?api=1&query=Sakha+Ballroom+Royal+Sentul+Park", photo: { src: "img/berdua.jpg", pos: "50% 25%" } }
+    { name: "Akad Nikah", start: "2026-12-27T10:00:00+07:00", end: "2026-12-27T12:00:00+07:00", time: "10.00 WIB – selesai", place: "Sakha Ballroom, Royal Sentul Park", address: "Jl. Sentul Raya, Kadumangu, Kec. Babakan Madang, Kabupaten Bogor, Jawa Barat 16810", maps: "https://www.google.com/maps/search/?api=1&query=Sakha+Ballroom+Royal+Sentul+Park", photo: { src: "img/siluet-2.jpg", pos: "68% 30%" } },
+    { name: "Resepsi",    start: "2026-12-27T13:00:00+07:00", end: "2026-12-27T17:00:00+07:00", time: "13.00 – 17.00 WIB",   place: "Sakha Ballroom, Royal Sentul Park", address: "Jl. Sentul Raya, Kadumangu, Kec. Babakan Madang, Kabupaten Bogor, Jawa Barat 16810", maps: "https://www.google.com/maps/search/?api=1&query=Sakha+Ballroom+Royal+Sentul+Park", photo: { src: "img/berdua.jpg", pos: "50% 25%" } }
   ],
   // Live streaming: isi mis. { when: "2026-12-27T10:00:00+07:00", url: "https://instagram.com/..." }. null = disembunyikan.
   stream: null,
@@ -496,6 +504,43 @@ $("#couple").append(person(A, CONFIG.brideFirst ? "Foto mempelai wanita" : "Foto
 if (!CONFIG.story.length) $("#story").closest("section").hidden = true;
 CONFIG.story.forEach(s => { const d = el("div", "rv"); d.append(el("span", "when", s.when), el("h4", null, s.title), el("p", null, s.text)); $("#story").append(d); });
 
+/* ---- add to calendar ---- */
+const utc = iso => new Date(iso).toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+function calInfo(ev) {
+  const title = `${ev.name} ${A.nick} & ${B.nick}`;
+  const end = ev.end || new Date(new Date(ev.start).getTime() + 2 * 3600e3).toISOString();
+  const location = [ev.place, ev.address].filter(Boolean).join(", ");
+  const details = `${ev.name} pernikahan ${A.full} & ${B.full}. Pukul ${ev.time}.` + (ev.maps ? ` Peta: ${ev.maps}` : "");
+  return { title, start: utc(ev.start), end: utc(end), location, details };
+}
+function googleCalUrl(ev) {
+  const i = calInfo(ev), q = new URLSearchParams({ action: "TEMPLATE", text: i.title, dates: `${i.start}/${i.end}`, details: i.details, location: i.location, ctz: "Asia/Jakarta" });
+  return "https://calendar.google.com/calendar/render?" + q;
+}
+function icsFile(ev) {
+  const i = calInfo(ev), esc = t => t.replace(/([,;\\])/g, "\\$1").replace(/\n/g, "\\n");
+  return ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Undangan//ID", "CALSCALE:GREGORIAN", "METHOD:PUBLISH", "BEGIN:VEVENT",
+    `UID:${i.start}-${ev.name.replace(/\s+/g, "")}@undangan`, `DTSTAMP:${utc(new Date().toISOString())}`, `DTSTART:${i.start}`, `DTEND:${i.end}`,
+    `SUMMARY:${esc(i.title)}`, `LOCATION:${esc(i.location)}`, `DESCRIPTION:${esc(i.details)}`,
+    "BEGIN:VALARM", "TRIGGER:-P1D", "ACTION:DISPLAY", `DESCRIPTION:${esc(i.title)} besok`, "END:VALARM",
+    "END:VEVENT", "END:VCALENDAR"].join("\r\n");
+}
+function calendarMenu(ev) {
+  const d = el("details", "cal"), sum = el("summary", "btn");
+  sum.innerHTML = '<svg><use href="#i-cal"/></svg>Simpan ke Kalender';
+  const menu = el("div", "cal-menu");
+  const g = el("a", null, "Google Calendar"); g.href = googleCalUrl(ev); g.target = "_blank"; g.rel = "noopener";
+  const ics = el("button", null, "iPhone / Outlook (.ics)"); ics.type = "button";
+  ics.onclick = () => {
+    const url = URL.createObjectURL(new Blob([icsFile(ev)], { type: "text/calendar;charset=utf-8" }));
+    const a = el("a"); a.href = url; a.download = `${ev.name.toLowerCase().replace(/\s+/g, "-")}-${A.nick}-${B.nick}.ics`.toLowerCase();
+    document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 4000); d.open = false;
+  };
+  menu.append(g, ics); d.append(sum, menu);
+  document.addEventListener("click", e => { if (!d.contains(e.target)) d.open = false; });
+  return d;
+}
+
 /* ---- events ---- */
 CONFIG.events.forEach(ev => {
   const c = el("article", "event rv");
@@ -503,7 +548,9 @@ CONFIG.events.forEach(ev => {
   const dl = el("dl");
   [["Pukul", ev.time], ["Tempat", ev.place], ["Alamat", ev.address]].forEach(([k, v]) => { if (!v) return; const r = el("div"); r.append(el("dt", null, k + " :"), el("dd", null, v)); dl.append(r); });
   c.append(dl);
-  if (ev.maps) { const a = el("a", "btn"); a.href = ev.maps; a.target = "_blank"; a.rel = "noopener"; a.innerHTML = '<svg><use href="#i-pin"/></svg>Lokasi Acara'; c.append(a); }
+  const act = el("div", "actions");
+  if (ev.maps) { const a = el("a", "btn"); a.href = ev.maps; a.target = "_blank"; a.rel = "noopener"; a.innerHTML = '<svg><use href="#i-pin"/></svg>Lokasi Acara'; act.append(a); }
+  act.append(calendarMenu(ev)); c.append(act);
   $("#events").append(c);
 });
 if (CONFIG.stream && CONFIG.stream.url) $("#streamLink").href = CONFIG.stream.url; else $("#stream").hidden = true;
