@@ -776,8 +776,14 @@ const audio = $("#audio"), mBtn = $("#music");
 if (CONFIG.music) { audio.src = CONFIG.music; audio.preload = "auto"; }
 // Hide the music button when the file is missing or cannot be played.
 audio.addEventListener("error", () => { mBtn.hidden = true; setPlaying(false); });
+// Fade the music in/out instead of starting or stopping abruptly.
+function fadeTo(target, ms = 1800) {
+  clearInterval(fadeTo.t); const from = audio.volume, t0 = performance.now();
+  return new Promise(res => { fadeTo.t = setInterval(() => { const k = Math.min(1, (performance.now() - t0) / ms); audio.volume = from + (target - from) * k; if (k === 1) { clearInterval(fadeTo.t); res(); } }, 50); });
+}
+function playMusic() { audio.volume = 0; return audio.play().then(() => { setPlaying(true); fadeTo(1); }); }
 function setPlaying(on) { mBtn.classList.toggle("playing", on); mBtn.setAttribute("aria-label", on ? "Pause music" : "Play music"); }
-mBtn.addEventListener("click", () => { if (audio.paused) audio.play().then(() => setPlaying(true)).catch(() => {}); else { audio.pause(); setPlaying(false); } });
+mBtn.addEventListener("click", () => { if (audio.paused) playMusic().catch(() => {}); else { setPlaying(false); fadeTo(0, 600).then(() => audio.pause()); } });
 
 /* ---- open cover ---- */
 $("#open").addEventListener("click", () => {
@@ -785,7 +791,7 @@ $("#open").addEventListener("click", () => {
   window.scrollTo(0, 0);
   if (CONFIG.music && !audio.error) {
     mBtn.hidden = false;
-    audio.play().then(() => { setPlaying(true); if (CONFIG.musicTitle) toast("♪ " + CONFIG.musicTitle); }).catch(() => { setPlaying(false); if (audio.error) mBtn.hidden = true; });
+    playMusic().then(() => { if (CONFIG.musicTitle) toast("♪ " + CONFIG.musicTitle); }).catch(() => { setPlaying(false); if (audio.error) mBtn.hidden = true; });
   }
 });
 
