@@ -421,8 +421,8 @@ form .submit.loading::after { content: ""; position: absolute; inset: 0; margin:
   <!-- VERSE -->
   <section class="sec cream">
     <svg class="sprig rv"><use href="#i-sprig"/></svg>
-    <p class="verse rv" data-anim="blur">“And of His signs is that He created for you from yourselves mates that you may find tranquility in them; and He placed between you affection and mercy. Indeed in that are signs for a people who give thought.”</p>
-    <p class="verse-src rv">QS. Ar-Rum 30:21</p>
+    <p class="verse rv" data-anim="blur" lang="id">“Dan di antara tanda-tanda (kebesaran)-Nya ialah Dia menciptakan pasangan-pasangan untukmu dari jenismu sendiri, agar kamu cenderung dan merasa tenteram kepadanya, dan Dia menjadikan di antaramu rasa kasih dan sayang. Sungguh, pada yang demikian itu benar-benar terdapat tanda-tanda (kebesaran Allah) bagi kaum yang berpikir.”</p>
+    <p class="verse-src rv" lang="id">QS. Ar-Rum: 21</p>
   </section>
 
   <!-- COUPLE -->
@@ -555,7 +555,9 @@ const CONFIG = {
     "img/yoga.jpg", { src: "img/koran.jpg", pos: "50% 45%" },
     { src: "img/siluet-2.jpg", pos: "70% 40%", wide: true }
   ],
-  music: "", // URL/ path mp3, mis. "audio/lagu.mp3". Kosong = tombol musik disembunyikan.
+  // Musik: taruh file mp3 di folder audio/ dengan nama ini. Jika file tidak ada, tombol musik otomatis disembunyikan.
+  music: "audio/jatuh-suka.mp3",
+  musicTitle: "Jatuh Suka — Tulus",
 
   // Opsional: URL Web App Google Apps Script (lihat apps-script.gs) agar ucapan tersimpan
   // untuk semua tamu. Kosong = ucapan hanya tersimpan di browser tamu itu sendiri.
@@ -771,7 +773,9 @@ renderWishes();
 
 /* ---- music ---- */
 const audio = $("#audio"), mBtn = $("#music");
-if (CONFIG.music) { audio.src = CONFIG.music; }
+if (CONFIG.music) { audio.src = CONFIG.music; audio.preload = "auto"; }
+// Hide the music button when the file is missing or cannot be played.
+audio.addEventListener("error", () => { mBtn.hidden = true; setPlaying(false); });
 function setPlaying(on) { mBtn.classList.toggle("playing", on); mBtn.setAttribute("aria-label", on ? "Pause music" : "Play music"); }
 mBtn.addEventListener("click", () => { if (audio.paused) audio.play().then(() => setPlaying(true)).catch(() => {}); else { audio.pause(); setPlaying(false); } });
 
@@ -779,7 +783,10 @@ mBtn.addEventListener("click", () => { if (audio.paused) audio.play().then(() =>
 $("#open").addEventListener("click", () => {
   $("#cover").classList.add("gone"); document.body.classList.remove("locked"); document.body.classList.add("opened");
   window.scrollTo(0, 0);
-  if (CONFIG.music) { mBtn.hidden = false; audio.play().then(() => setPlaying(true)).catch(() => setPlaying(false)); }
+  if (CONFIG.music && !audio.error) {
+    mBtn.hidden = false;
+    audio.play().then(() => { setPlaying(true); if (CONFIG.musicTitle) toast("♪ " + CONFIG.musicTitle); }).catch(() => { setPlaying(false); if (audio.error) mBtn.hidden = true; });
+  }
 });
 
 /* ---- motion: reveal, parallax, tilt, progress ---- */
