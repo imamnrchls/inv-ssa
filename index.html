@@ -24,6 +24,11 @@
   --cream-ink: #3a2a2c;   /* text on cream */
   --gold: #e9d9c6;        /* soft light text on maroon */
   --line: rgba(233, 217, 198, .35);
+  --cream-mute: #6f6264;  /* secondary text on cream (5.4:1) */
+  --field: #fbf8f4;       /* inputs + cards on cream */
+  --field-line: #d9cbbb;
+  --card-line: #e6dccf;
+  --err: #9b1c31;
   --ok: #cdeccd; --ok-ink: #1f5e2a;
   --no: #f6c9cf; --no-ink: #8a1f2d;
 
@@ -222,43 +227,56 @@ p { margin: 0; }
 .card.addr .copy { align-self: center; margin-top: 12px; }
 
 /* ---------- wishes / rsvp ---------- */
-.wish-head { display: flex; align-items: center; gap: 14px; margin: 0 0 18px; text-align: left; }
-.wish-head .ph { width: 110px; height: 110px; border-radius: 50%; flex: none; border: 3px solid var(--wine); }
-.wish-head .script { font-size: 46px; color: var(--wine); }
-.wish-head p { font-size: 11.5px; }
-.tally { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px; }
-.tally div { border-radius: 8px; padding: 8px 0; font-size: 11px; }
-.tally b { display: block; font-size: 18px; }
-.tally .y { background: var(--ok); color: var(--ok-ink); }
-.tally .n { background: var(--no); color: var(--no-ink); }
-form { display: grid; gap: 10px; text-align: left; }
-form label { font-size: 10.5px; letter-spacing: .06em; font-weight: 500; }
-form input, form textarea, form select {
-  width: 100%; border: 1px solid #d5cbc0; border-radius: 6px; background: #fff; color: var(--cream-ink);
-  padding: 9px 12px; font-size: 12.5px; color-scheme: light;
+#ucapan { padding-bottom: 48px; }
+.wish-top { display: grid; justify-items: center; gap: 8px; margin-bottom: 26px; }
+.wish-top .sprig { width: 40px; height: 40px; margin: 0; }
+.wish-top .script { font-size: 50px; color: var(--wine); }
+.wish-top p:not(.script) { font-size: 12px; max-width: 30ch; color: var(--cream-mute); }
+form { display: grid; gap: 16px; text-align: left; }
+.field { display: grid; gap: 6px; }
+.flabel, .att legend { font-size: 10px; letter-spacing: .2em; text-transform: uppercase; font-weight: 500; color: var(--wine); }
+form input, form textarea {
+  width: 100%; border: 1px solid var(--field-line); border-radius: 12px; background: var(--field); color: var(--cream-ink);
+  padding: 12px 14px; font-size: 16px; line-height: 1.5; color-scheme: light; appearance: none;
 }
-form textarea { min-height: 84px; resize: vertical; }
-form .submit { border: 0; border-radius: 6px; background: var(--wine); color: #fff; padding: 11px; cursor: pointer; font-weight: 500; letter-spacing: .06em; }
+form ::placeholder { color: #9a8b86; }
+form textarea { min-height: 112px; resize: none; }
+.field .meta { display: flex; justify-content: space-between; gap: 8px; min-height: 1em; font-size: 10.5px; }
+.counter { margin-left: auto; color: var(--cream-mute); font-variant-numeric: tabular-nums; }
+.err { color: var(--err); display: flex; align-items: center; gap: 5px; }
+.err:empty { display: none; }
+.err::before { content: "!"; display: inline-grid; place-items: center; width: 13px; height: 13px; border-radius: 50%; background: var(--err); color: #fff; font-size: 9px; font-weight: 700; }
+form .invalid { border-color: var(--err); box-shadow: 0 0 0 3px rgba(155,28,49,.12); }
+form .submit { border: 0; border-radius: 999px; background: var(--wine); color: var(--gold); padding: 14px; cursor: pointer; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; font-size: 11.5px; }
 form .submit:disabled { opacity: .6; cursor: wait; }
-.form-msg { font-size: 11px; min-height: 1.2em; }
-.wishes-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin: 30px 0 12px; padding-top: 22px; border-top: 1px solid #d9cfc4; text-align: left; }
-.wishes-head h3 { margin: 0; font-family: var(--f-display); font-weight: 400; font-size: 19px; }
-.wishes-head span { font-size: 10.5px; letter-spacing: .08em; opacity: .7; }
-.wishes { list-style: none; margin: 0; padding: 2px; text-align: left; display: grid; gap: 10px; max-height: 440px; overflow-y: auto; overscroll-behavior: contain; }
+.form-msg { font-size: 11.5px; min-height: 1.2em; text-align: center; color: var(--wine); }
+.form-msg:empty { display: none; }
+.wishes-head { display: grid; justify-items: center; gap: 6px; margin: 40px 0 18px; text-align: center; }
+.wishes-head h3 { display: flex; align-items: center; gap: 12px; width: 100%; margin: 0; font-family: var(--f-display); font-weight: 400; font-size: 22px; color: var(--cream-ink); }
+.wishes-head h3::before, .wishes-head h3::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--field-line)); }
+.wishes-head h3::after { background: linear-gradient(270deg, transparent, var(--field-line)); }
+.summary { font-size: 11px; letter-spacing: .06em; color: var(--cream-mute); }
+.summary b { color: var(--wine); font-weight: 600; font-variant-numeric: tabular-nums; display: inline-block; }
+.summary:empty { display: none; }
+.wishes { list-style: none; margin: 0; padding: 0; text-align: left; display: grid; gap: 10px; }
 .wishes li:not(.empty) {
-  display: grid; grid-template-columns: 38px minmax(0, 1fr); column-gap: 12px; align-items: start;
-  padding: 14px; background: #fff; border: 1px solid #e4dbd0; border-radius: 12px;
+  display: grid; grid-template-columns: 40px minmax(0, 1fr); column-gap: 12px; align-items: start;
+  padding: 16px; background: var(--field); border: 1px solid var(--card-line); border-radius: 14px;
 }
-.wishes .av { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; background: var(--wine); color: var(--gold); font-family: var(--f-display); font-size: 16px; line-height: 1; }
-.wishes .body { min-width: 0; display: grid; gap: 4px; }
+.wishes .av { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: linear-gradient(160deg, var(--wine), var(--wine-deep)); color: var(--gold); font-family: var(--f-display); font-size: 17px; line-height: 1; }
+.wishes .body { min-width: 0; display: grid; gap: 5px; }
 .wishes .who { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 8px; }
-.wishes strong { font-size: 13px; font-weight: 600; overflow-wrap: anywhere; }
-.wishes .tag { font-size: 9.5px; font-weight: 500; border-radius: 99px; padding: 2px 8px; line-height: 1.4; }
-.wishes .tag.y { background: var(--ok); color: var(--ok-ink); }
-.wishes .tag.n { background: var(--no); color: var(--no-ink); }
-.wishes p { font-size: 12.5px; margin: 0; line-height: 1.6; overflow-wrap: anywhere; white-space: pre-line; }
-.wishes time { font-size: 10px; opacity: .6; }
-.empty { font-size: 11.5px; opacity: .7; text-align: center; padding: 18px 12px; border: 1px dashed #d5cbc0; border-radius: 12px; }
+.wishes strong { font-size: 13.5px; font-weight: 600; overflow-wrap: anywhere; color: var(--cream-ink); }
+.wishes .tag { display: inline-flex; align-items: center; gap: 4px; font-size: 9.5px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; border-radius: 99px; padding: 3px 9px 3px 7px; line-height: 1.3; }
+.wishes .tag svg { width: 11px; height: 11px; flex: none; }
+.wishes .tag.y { background: var(--wine); color: var(--gold); }
+.wishes .tag.n { border: 1px solid var(--field-line); color: var(--cream-mute); }
+.wishes p { font-size: 13px; margin: 0; line-height: 1.65; overflow-wrap: anywhere; white-space: pre-line; color: var(--cream-ink); }
+.wishes time { font-size: 10.5px; color: var(--cream-mute); }
+.empty { font-size: 12px; color: var(--cream-mute); text-align: center; padding: 22px 16px; border: 1px dashed var(--field-line); border-radius: 14px; }
+.more { justify-self: center; margin-top: 16px; border: 1px solid var(--wine); color: var(--wine); background: transparent; border-radius: 999px; padding: 9px 20px; font-size: 11px; letter-spacing: .1em; cursor: pointer; transition: background .2s, color .2s, transform .15s; }
+.more:hover { background: var(--wine); color: var(--gold); }
+.more:active { transform: scale(.96); }
 
 /* ---------- thanks ---------- */
 .thanks .bar { width: 1px; height: 36px; background: var(--gold); margin: 0 auto 16px; }
@@ -360,19 +378,32 @@ body.opened .count > div:nth-child(3) { animation-delay: 1.15s; } body.opened .c
 .card .copy { transition: background .2s, color .2s, transform .15s; position: relative; z-index: 1; }
 .card .copy:active { transform: scale(.92); }
 .card .copy.done { background: #2e7d4f; color: #fff; }
-form input, form textarea { transition: border-color .2s, box-shadow .2s; }
-form input:focus, form textarea:focus { outline: none; border-color: var(--wine); box-shadow: 0 0 0 3px rgba(74,15,28,.14); }
-.att { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; border: 0; padding: 0; margin: 0; }
-.att legend { font-size: 10.5px; letter-spacing: .06em; font-weight: 500; padding: 0; margin-bottom: 8px; }
-.att label { position: relative; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 9px; border-radius: 8px; border: 1px solid #d5cbc0; background: #fff; cursor: pointer; font-size: 12px; font-weight: 400; letter-spacing: 0; transition: background .2s, color .2s, border-color .2s, transform .15s; }
-.att label:active { transform: scale(.96); }
+form input, form textarea { transition: border-color .2s, box-shadow .2s, background .2s; }
+form input:focus, form textarea:focus { outline: none; border-color: var(--wine); background: #fff; box-shadow: 0 0 0 3px rgba(74,15,28,.12); }
+.att { border: 0; padding: 0; margin: 0; min-width: 0; }
+.att legend { padding: 0; margin-bottom: 8px; }
+.att .opts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.att label {
+  position: relative; display: grid; justify-items: center; align-content: center; gap: 6px; min-height: 104px; padding: 14px 10px;
+  border-radius: 14px; border: 1px solid var(--field-line); background: var(--field); color: var(--wine);
+  cursor: pointer; text-align: center; transition: background .3s, color .3s, border-color .3s, transform .15s, box-shadow .3s;
+}
+.att label:hover { border-color: var(--wine); }
+.att label:active { transform: scale(.97); }
 .att input { position: absolute; opacity: 0; pointer-events: none; }
-.att label:has(input:checked) { background: var(--wine); border-color: var(--wine); color: #fff; }
-.att label:has(input:focus-visible) { outline: 2px solid var(--wine); outline-offset: 2px; }
-.att .dot { width: 8px; height: 8px; border-radius: 50%; border: 1.5px solid currentColor; transition: background .2s; }
-.att label:has(input:checked) .dot { background: currentColor; }
+.att .ico { width: 30px; height: 30px; transition: transform .4s cubic-bezier(.3,1.6,.5,1); }
+.att .t1 { font-family: var(--f-display); font-size: 15px; line-height: 1.2; }
+.att .t2 { font-size: 10.5px; color: var(--cream-mute); line-height: 1.35; transition: color .3s; }
+.att .tick { position: absolute; top: 8px; right: 8px; width: 18px; height: 18px; border-radius: 50%; background: var(--gold); color: var(--wine); display: grid; place-items: center; transform: scale(0); transition: transform .3s cubic-bezier(.3,1.6,.5,1); }
+.att .tick svg { width: 10px; height: 10px; }
+.att label:has(input:checked) { background: linear-gradient(160deg, var(--wine), var(--wine-deep)); border-color: var(--wine); color: var(--gold); box-shadow: 0 10px 24px rgba(74,15,28,.25); }
+.att label:has(input:checked) .t2 { color: rgba(233,217,198,.8); }
+.att label:has(input:checked) .ico { transform: scale(1.12); }
+.att label:has(input:checked) .tick { transform: scale(1); }
+.att label:has(input:focus-visible) { outline: 2px solid var(--wine); outline-offset: 3px; }
+.att.invalid label { border-color: var(--err); }
 form .submit { position: relative; transition: background .2s, transform .15s; }
-form .submit:hover { background: #5e1526; }
+form .submit:hover { background: #5e1526; color: #fff; }
 form .submit:active { transform: scale(.97); }
 form .submit.loading { color: transparent; }
 form .submit.loading::after { content: ""; position: absolute; inset: 0; margin: auto; width: 16px; height: 16px; border-radius: 50%; border: 2px solid rgba(255,255,255,.4); border-top-color: #fff; animation: spin .7s linear infinite; }
@@ -381,7 +412,7 @@ form .submit.loading::after { content: ""; position: absolute; inset: 0; margin:
 .wishes li.new { animation: wishIn .7s cubic-bezier(.2,.7,.2,1), glowNew 2.4s ease .7s; border-color: rgba(74,15,28,.35); }
 @keyframes glowNew { 0% { box-shadow: 0 0 0 3px rgba(74,15,28,.18); } 100% { box-shadow: 0 0 0 0 rgba(74,15,28,0); } }
 @keyframes wishIn { from { opacity: 0; transform: translateY(-14px); } }
-.tally b.bump { animation: bump .5s cubic-bezier(.3,1.6,.5,1); }
+.summary b.bump { animation: bump .5s cubic-bezier(.3,1.6,.5,1); }
 @keyframes bump { 40% { transform: scale(1.45); } }
 .music.playing::before { content: ""; position: absolute; inset: -1px; border-radius: 50%; border: 1px solid var(--gold); animation: ring 2s ease-out infinite; }
 @keyframes ring { to { transform: scale(1.6); opacity: 0; } }
@@ -404,6 +435,9 @@ form .submit.loading::after { content: ""; position: absolute; inset: 0; margin:
   <symbol id="i-mail" viewBox="0 0 24 24"><path d="M3 5h18v14H3z M3 6l9 7 9-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
   <symbol id="i-gift" viewBox="0 0 24 24"><path d="M3 9h18v4H3zM5 13h14v8H5zM12 9v12M12 9S9 3 6.5 5 9 9 12 9zm0 0s3-6 5.5-4S15 9 12 9z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
   <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 10h18M8 3v4M16 3v4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-rings" viewBox="0 0 32 32"><circle cx="12.5" cy="19" r="8" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="19.5" cy="19" r="8" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M16.5 6.5l3-3 3 3-3 3.2z" fill="currentColor"/></symbol>
+  <symbol id="i-pray" viewBox="0 0 32 32"><path d="M16 27s-10-6.2-10-13.2A5.6 5.6 0 0 1 16 10.4a5.6 5.6 0 0 1 10 3.4C26 20.8 16 27 16 27z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M5 5.5l2.2 2.2M27 5.5l-2.2 2.2M16 2.5v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+  <symbol id="i-check" viewBox="0 0 12 12"><path d="M2.5 6.2l2.3 2.3 4.7-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="currentColor"/></symbol>
   <symbol id="i-disc" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="2.5" fill="currentColor"/><path d="M12 5a7 7 0 0 1 7 7" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".6"/></symbol>
   <symbol id="i-pause" viewBox="0 0 24 24"><path d="M7 5h3v14H7zM14 5h3v14h-3z" fill="currentColor"/></symbol>
@@ -500,26 +534,36 @@ form .submit.loading::after { content: ""; position: absolute; inset: 0; margin:
 
   <!-- WISHES / RSVP -->
   <section class="sec cream" id="ucapan">
-    <div class="wish-head rv">
-      <div class="ph" data-photo="wish" data-label=""></div>
-      <div><p class="script">Wishes &amp; Prayers</p><p>Send us your wishes and prayers, and let us know if you can attend.</p></div>
+    <div class="wish-top">
+      <svg class="sprig rv"><use href="#i-sprig"/></svg>
+      <p class="script rv">Wishes &amp; Prayers</p>
+      <p class="rv">Send us your wishes and prayers, and let us know if you can attend.</p>
     </div>
-    <div class="tally rv"><div class="y"><b id="tY">0</b>Attending</div><div class="n"><b id="tN">0</b>Not Attending</div></div>
     <form id="rsvp" class="rv" novalidate>
-      <label for="f-name">Name</label>
-      <input id="f-name" name="name" maxlength="60" required autocomplete="name" placeholder="Your name">
-      <label for="f-msg">Wishes</label>
-      <textarea id="f-msg" name="msg" maxlength="500" required placeholder="Write your wishes and prayers"></textarea>
-      <fieldset class="att">
+      <div class="field">
+        <label class="flabel" for="f-name">Your name</label>
+        <input id="f-name" name="name" maxlength="60" required autocomplete="name" placeholder="e.g. Budi Santoso" aria-describedby="e-name">
+        <div class="meta"><span class="err" id="e-name"></span></div>
+      </div>
+      <div class="field">
+        <label class="flabel" for="f-msg">Your wishes</label>
+        <textarea id="f-msg" name="msg" maxlength="500" required placeholder="Write your wishes and prayers for Sifa &amp; Yoga" aria-describedby="e-msg c-msg"></textarea>
+        <div class="meta"><span class="err" id="e-msg"></span><span class="counter" id="c-msg">0 / 500</span></div>
+      </div>
+      <fieldset class="att" id="f-att" aria-describedby="e-att">
         <legend>Will you attend?</legend>
-        <label><input type="radio" name="att" id="f-att-y" value="y"><span class="dot"></span>Attending</label>
-        <label><input type="radio" name="att" id="f-att-n" value="n"><span class="dot"></span>Not attending</label>
+        <div class="opts">
+        <label><input type="radio" name="att" id="f-att-y" value="y"><span class="tick"><svg><use href="#i-check"/></svg></span><svg class="ico"><use href="#i-rings"/></svg><span class="t1">Joyfully attend</span><span class="t2">I'll be there</span></label>
+        <label><input type="radio" name="att" id="f-att-n" value="n"><span class="tick"><svg><use href="#i-check"/></svg></span><svg class="ico"><use href="#i-pray"/></svg><span class="t1">Unable to attend</span><span class="t2">Sending prayers from afar</span></label>
+        </div>
       </fieldset>
+      <div class="meta" style="margin-top:-8px"><span class="err" id="e-att"></span></div>
       <button class="submit" type="submit">Send Wishes</button>
       <p class="form-msg" id="formMsg" role="status"></p>
     </form>
-    <div class="wishes-head"><h3>Guest Wishes</h3><span id="wCount"></span></div>
+    <div class="wishes-head"><h3>Guest Wishes</h3><p class="summary" id="summary"></p></div>
     <ul class="wishes" id="wishes"></ul>
+    <button class="more" id="more" type="button" hidden>Show more wishes</button>
   </section>
 
   <!-- THANKS -->
@@ -770,23 +814,48 @@ function ago(ts) {
   for (const [u, n] of [["year", 31536000], ["month", 2592000], ["week", 604800], ["day", 86400], ["hour", 3600], ["minute", 60]]) if (s >= n) return rtf.format(-Math.floor(s / n), u);
   return "just now";
 }
-function setCount(node, n) { if (node.textContent !== String(n)) { node.textContent = n; node.classList.remove("bump"); void node.offsetWidth; node.classList.add("bump"); } }
+const PAGE = 5; let shown = PAGE;
+const prettyName = n => n === n.toLowerCase() ? n.replace(/(^|\s)\S/g, c => c.toUpperCase()) : n;
+const bumpNum = (node, n) => { if (node.textContent !== String(n)) { node.textContent = n; node.classList.remove("bump"); void node.offsetWidth; node.classList.add("bump"); } };
+let lastCounts = null;
 async function renderWishes(newTs) {
-  let all = []; try { all = await store.list(); } catch { $("#wishes").replaceChildren(el("li", "empty", "Wishes could not be loaded. Please reload the page.")); return; }
-  setCount($("#tY"), all.filter(w => w.att === "y").length);
-  setCount($("#tN"), all.filter(w => w.att === "n").length);
-  const ul = $("#wishes"); ul.replaceChildren();
-  $("#wCount").textContent = all.length ? `${all.length} ${all.length === 1 ? "wish" : "wishes"}` : "";
-  if (!all.length) { ul.append(el("li", "empty", "No wishes yet. Be the first to send your prayers.")); return; }
-  all.sort((a, b) => b.ts - a.ts).forEach(w => {
-    const li = el("li", w.ts === newTs ? "new" : null);
-    const av = el("span", "av", (w.name.trim()[0] || "?").toUpperCase()); av.setAttribute("aria-hidden", "true");
-    const who = el("div", "who"); who.append(el("strong", null, w.name), el("span", "tag " + w.att, w.att === "y" ? "Attending" : "Not attending"));
+  const ul = $("#wishes"), more = $("#more");
+  let all = []; try { all = await store.list(); } catch { ul.replaceChildren(el("li", "empty", "Wishes could not be loaded. Please reload the page.")); more.hidden = true; return; }
+  const y = all.filter(w => w.att === "y").length, n = all.filter(w => w.att === "n").length;
+  const sum = $("#summary");
+  if (!all.length) sum.replaceChildren();
+  else {
+    if (!sum.firstChild) sum.innerHTML = '<b data-k="y"></b> attending · <b data-k="n"></b> sending prayers · <b data-k="t"></b> <span data-k="w"></span>';
+    const set = (k, v) => { const b = sum.querySelector(`[data-k="${k}"]`); if (lastCounts) bumpNum(b, v); else b.textContent = v; };
+    set("y", y); set("n", n); set("t", all.length); sum.querySelector('[data-k="w"]').textContent = all.length === 1 ? "wish" : "wishes";
+    lastCounts = { y, n };
+  }
+  ul.replaceChildren();
+  if (!all.length) { ul.append(el("li", "empty", "No wishes yet. Be the first to send your prayers.")); more.hidden = true; return; }
+  const sorted = all.sort((a, b) => b.ts - a.ts);
+  sorted.slice(0, shown).forEach(w => {
+    const li = el("li", w.ts === newTs ? "new" : null), name = prettyName(w.name.trim());
+    const av = el("span", "av", (name[0] || "?").toUpperCase()); av.setAttribute("aria-hidden", "true");
+    const tag = el("span", "tag " + w.att); tag.innerHTML = w.att === "y" ? '<svg><use href="#i-rings"/></svg>' : '<svg><use href="#i-pray"/></svg>';
+    tag.append(w.att === "y" ? "Attending" : "Sending prayers");
+    const who = el("div", "who"); who.append(el("strong", null, name), tag);
     const t = el("time", null, ago(w.ts)); t.dateTime = new Date(w.ts).toISOString();
     const body = el("div", "body"); body.append(who, el("p", null, w.msg), t);
     li.append(av, body); ul.append(li);
   });
+  const left = sorted.length - shown;
+  more.hidden = left <= 0; more.textContent = `Show more wishes (${left})`;
 }
+$("#more").addEventListener("click", () => { shown += PAGE; renderWishes(); });
+
+/* ---- form: counter + per-field validation ---- */
+const fName = $("#f-name"), fMsg = $("#f-msg"), fAtt = $("#f-att");
+fMsg.addEventListener("input", () => { $("#c-msg").textContent = `${fMsg.value.length} / 500`; });
+function setErr(field, errId, text) { $("#" + errId).textContent = text; field.classList.toggle("invalid", !!text); if (field.setAttribute) field.setAttribute("aria-invalid", text ? "true" : "false"); }
+fName.addEventListener("input", () => setErr(fName, "e-name", ""));
+fMsg.addEventListener("input", () => setErr(fMsg, "e-msg", ""));
+fAtt.addEventListener("change", () => setErr(fAtt, "e-att", ""));
+let lastSent = "";
 function burst(from) {
   if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   const r = from.getBoundingClientRect();
@@ -801,9 +870,15 @@ $("#rsvp").addEventListener("submit", async e => {
   e.preventDefault();
   const f = e.currentTarget, msg = $("#formMsg");
   const fe = f.elements, item = { name: fe.name.value.trim(), msg: fe.msg.value.trim(), att: fe.att.value, ts: Date.now() };
-  if (!item.name || !item.msg || !item.att) { msg.textContent = "Please fill in your name, your wishes, and whether you will attend."; return; }
+  setErr(fName, "e-name", item.name ? "" : "Please enter your name.");
+  setErr(fMsg, "e-msg", item.msg ? "" : "Please write a short wish.");
+  setErr(fAtt, "e-att", item.att ? "" : "Please choose whether you can attend.");
+  const firstBad = !item.name ? fName : !item.msg ? fMsg : !item.att ? $("#f-att-y") : null;
+  if (firstBad) { msg.textContent = ""; firstBad.focus({ preventScroll: true }); firstBad.scrollIntoView({ behavior: "smooth", block: "center" }); return; }
+  const key = item.name.toLowerCase() + "|" + item.msg;
+  if (key === lastSent) { msg.textContent = "You've already sent this wish. Thank you!"; return; }
   const btn = f.querySelector(".submit"); btn.disabled = true; btn.classList.add("loading"); msg.textContent = "";
-  try { await store.add(item); f.reset(); msg.textContent = "Thank you, your wishes have been sent."; burst(btn); await renderWishes(item.ts); }
+  try { await store.add(item); lastSent = key; f.reset(); $("#c-msg").textContent = "0 / 500"; msg.textContent = "Thank you, your wishes have been sent."; burst(btn); await renderWishes(item.ts); }
   catch { msg.textContent = "Sending failed. Check your connection and try again."; }
   btn.disabled = false; btn.classList.remove("loading");
 });
