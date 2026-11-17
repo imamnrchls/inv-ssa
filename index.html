@@ -297,6 +297,9 @@ form .submit:disabled { opacity: .6; cursor: wait; }
 .strip .ph { flex: 0 0 46%; aspect-ratio: 3/4; border-radius: 10px; scroll-snap-align: center; }
 .thanks .names { font-family: var(--f-display); font-size: 28px; color: #fff; margin: 6px 0 0; }
 footer { padding: 28px 24px calc(28px + env(safe-area-inset-bottom, 0px)); text-align: center; font-size: 10.5px; background: var(--wine-deep); opacity: .9; }
+footer .credit { margin-top: 6px; font-size: 10px; letter-spacing: .12em; opacity: .75; }
+footer .credit a { color: var(--gold); text-decoration: none; border-bottom: 1px solid rgba(233,217,198,.4); transition: border-color .2s, opacity .2s; }
+footer .credit a:hover { border-color: var(--gold); }
 
 /* ---------- music + toast ---------- */
 .music {
@@ -586,7 +589,10 @@ form .submit.loading::after { content: ""; position: absolute; inset: 0; margin:
     <p class="eyebrow rv">With love,</p>
     <p class="names rv" data-anim="zoom" data-bind="couple"></p>
   </section>
-  <footer>Made with love for our special day</footer>
+  <footer>
+    <p>Made with love for our special day</p>
+    <p class="credit">by <a href="https://imamnur.my.id" target="_blank" rel="noopener">InDsgn</a></p>
+  </footer>
 </main>
 
 <div class="progress" id="progress" aria-hidden="true"></div>
