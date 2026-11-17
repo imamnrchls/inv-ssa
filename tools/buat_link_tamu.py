@@ -109,7 +109,8 @@ def build(out, example=None):
         ("", False),
         ("Catatan", True),
         ("- Jangan menyisipkan atau mengurutkan baris di 'Hasil Link'; cukup kelola daftar di tab 'Daftar Tamu'.", False),
-        ("- Teks pesan WhatsApp diatur di situs undangan (halaman /wa). Minta perubahan teks bila perlu.", False),
+        ("- Teks pesan WhatsApp diedit di Google Sheet undangan (tab 'Pesan WA', sel A2), bukan di file ini.", False),
+        ("  Perubahan langsung dipakai tombol 'Kirim WA' berikutnya. {nama} = nama tamu, {link} = link undangan.", False),
         ("- Bisa dibuka di Excel, Excel HP, maupun Google Sheets.", False),
     ]
     for i, (t, bold) in enumerate(lines, 1):
