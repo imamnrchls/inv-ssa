@@ -253,6 +253,7 @@ p { margin: 0; }
 .wish-top p:not(.script) { font-size: 12px; max-width: 30ch; color: var(--cream-mute); }
 form { display: grid; gap: 16px; text-align: left; }
 .field { display: grid; gap: 6px; }
+.flabel .opt { text-transform: none; letter-spacing: .02em; color: var(--cream-mute); font-weight: 400; }
 .flabel, .att legend { font-size: 10px; letter-spacing: .2em; text-transform: uppercase; font-weight: 500; color: var(--wine); }
 form input, form textarea {
   width: 100%; border: 1px solid var(--field-line); border-radius: 12px; background: var(--field); color: var(--cream-ink);
@@ -583,8 +584,8 @@ form .submit.loading::after { content: ""; position: absolute; inset: 0; margin:
         <div class="meta"><span class="err" id="e-name"></span></div>
       </div>
       <div class="field">
-        <label class="flabel" for="f-msg">Your wishes</label>
-        <textarea id="f-msg" name="msg" maxlength="500" required placeholder="Write your wishes and prayers for Sifa &amp; Yoga" aria-describedby="e-msg c-msg"></textarea>
+        <label class="flabel" for="f-msg">Your wishes <span class="opt">(optional)</span></label>
+        <textarea id="f-msg" name="msg" maxlength="500" placeholder="Write your wishes and prayers for Sifa &amp; Yoga" aria-describedby="e-msg c-msg"></textarea>
         <div class="meta"><span class="err" id="e-msg"></span><span class="counter" id="c-msg">0 / 500</span></div>
       </div>
       <fieldset class="att" id="f-att" aria-describedby="e-att">
@@ -868,6 +869,9 @@ function ago(ts) {
   return "just now";
 }
 const PAGE = 5; let shown = PAGE;
+// Wishes are optional: an RSVP without a message is stored as "-" (Sheets may keep it as "'-").
+const NO_MSG = "-";
+const isNoMsg = m => !m || /^'?-$/.test(String(m).trim());
 const prettyName = n => n === n.toLowerCase() ? n.replace(/(^|\s)\S/g, c => c.toUpperCase()) : n;
 const bumpNum = (node, n) => { if (node.textContent !== String(n)) { node.textContent = n; node.classList.remove("bump"); void node.offsetWidth; node.classList.add("bump"); } };
 let lastCounts = null;
@@ -880,7 +884,7 @@ async function renderWishes(newTs) {
   else {
     if (!sum.firstChild) sum.innerHTML = '<b data-k="y"></b> attending · <b data-k="n"></b> unable to attend · <b data-k="t"></b> <span data-k="w"></span>';
     const set = (k, v) => { const b = sum.querySelector(`[data-k="${k}"]`); if (lastCounts) bumpNum(b, v); else b.textContent = v; };
-    set("y", y); set("n", n); set("t", all.length); sum.querySelector('[data-k="w"]').textContent = all.length === 1 ? "wish" : "wishes";
+    set("y", y); set("n", n); const nW = all.filter(w => !isNoMsg(w.msg)).length; set("t", nW); sum.querySelector('[data-k="w"]').textContent = nW === 1 ? "wish" : "wishes";
     lastCounts = { y, n };
   }
   ul.replaceChildren();
@@ -893,7 +897,9 @@ async function renderWishes(newTs) {
     tag.append(w.att === "y" ? "Attending" : "Unable to attend");
     const who = el("div", "who"); who.append(el("strong", null, name), tag);
     const t = el("time", null, ago(w.ts)); t.dateTime = new Date(w.ts).toISOString();
-    const body = el("div", "body"); body.append(who, el("p", null, w.msg), t);
+    const body = el("div", "body"); body.append(who);
+    if (!isNoMsg(w.msg)) body.append(el("p", null, w.msg));
+    body.append(t);
     li.append(av, body); ul.append(li);
   });
   const left = sorted.length - shown;
@@ -929,14 +935,15 @@ $("#rsvp").addEventListener("submit", async e => {
   const f = e.currentTarget, msg = $("#formMsg");
   const fe = f.elements, item = { name: fe.name.value.trim(), msg: fe.msg.value.trim(), att: fe.att.value, ts: Date.now() };
   setErr(fName, "e-name", item.name ? "" : "Please enter your name.");
-  setErr(fMsg, "e-msg", item.msg ? "" : "Please write a short wish.");
   setErr(fAtt, "e-att", item.att ? "" : "Please choose whether you can attend.");
-  const firstBad = !item.name ? fName : !item.msg ? fMsg : !item.att ? $("#f-att-y") : null;
+  const firstBad = !item.name ? fName : !item.att ? $("#f-att-y") : null;
   if (firstBad) { msg.textContent = ""; firstBad.focus({ preventScroll: true }); firstBad.scrollIntoView({ behavior: "smooth", block: "center" }); return; }
+  const hasMsg = !!item.msg;
+  if (!hasMsg) item.msg = NO_MSG; // the backend needs a value; shown as "no message"
   const key = item.name.toLowerCase() + "|" + item.msg;
   if (key === lastSent) { msg.textContent = "You've already sent this wish. Thank you!"; return; }
   const btn = f.querySelector(".submit"); btn.disabled = true; btn.classList.add("loading"); msg.textContent = "";
-  try { await store.add(item); lastSent = key; f.reset(); $("#c-msg").textContent = "0 / 500"; msg.textContent = "Thank you, your wishes have been sent."; burst(btn); await renderWishes(item.ts); }
+  try { await store.add(item); lastSent = key; f.reset(); $("#c-msg").textContent = "0 / 500"; msg.textContent = hasMsg ? "Thank you, your wishes have been sent." : "Thank you, your RSVP has been sent."; burst(btn); await renderWishes(item.ts); }
   catch { msg.textContent = "Sending failed. Check your connection and try again."; }
   btn.disabled = false; btn.classList.remove("loading");
 });
