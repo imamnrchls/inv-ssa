@@ -442,9 +442,12 @@ const CONFIG = {
     gift:  { src: "img/siluet-1.jpg", pos: "72% 35%" },
     wish:  { src: "img/berdua.jpg",   pos: "50% 22%" }
   },
-  gallery: [ // jumlah bebas; foto ke-1, 6, 11, ... tampil lebar
-    { src: "img/siluet-1.jpg", pos: "60% 40%" }, "img/berdua.jpg", "img/sifa.jpg", "img/yoga.jpg",
-    { src: "img/lingkaran.jpg", pos: "50% 55%" }, { src: "img/siluet-2.jpg", pos: "70% 40%" }
+  gallery: [ // jumlah bebas; tambahkan wide: true untuk foto lebar (2 kolom)
+    { src: "img/siluet-1.jpg", pos: "60% 40%", wide: true },
+    "img/berdua.jpg", "img/sifa.jpg",
+    { src: "img/lingkaran.jpg", pos: "50% 55%", wide: true },
+    "img/yoga.jpg", { src: "img/koran.jpg", pos: "50% 45%" },
+    { src: "img/siluet-2.jpg", pos: "70% 40%", wide: true }
   ],
   music: "", // URL/ path mp3, mis. "audio/lagu.mp3". Kosong = tombol musik disembunyikan.
 
@@ -506,8 +509,12 @@ CONFIG.events.forEach(ev => {
 if (CONFIG.stream && CONFIG.stream.url) $("#streamLink").href = CONFIG.stream.url; else $("#stream").hidden = true;
 
 /* ---- gallery + lightbox ---- */
+let gCol = 0;
 CONFIG.gallery.forEach((url, i) => {
-  const b = el("button", "ph" + (i % 5 === 0 && i < CONFIG.gallery.length - 1 ? " wide" : "")); b.dataset.label = "Foto " + (i + 1); setPhoto(b, url);
+  let wide = !!(url && url.wide);
+  if (!wide && gCol === 0 && i === CONFIG.gallery.length - 1) wide = true; // jangan biarkan foto terakhir sendirian
+  gCol = wide ? 0 : (gCol + 1) % 2;
+  const b = el("button", "ph" + (wide ? " wide" : "")); b.dataset.label = "Foto " + (i + 1); setPhoto(b, url);
   b.setAttribute("aria-label", "Lihat foto " + (i + 1));
   b.addEventListener("click", () => {
     const lb = el("div", "lightbox"); lb.setAttribute("role", "dialog"); lb.setAttribute("aria-modal", "true");
