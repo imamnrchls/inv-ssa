@@ -297,6 +297,21 @@ form .submit:disabled { opacity: .6; cursor: wait; }
 .strip .ph { flex: 0 0 46%; aspect-ratio: 3/4; border-radius: 10px; scroll-snap-align: center; }
 .thanks .names { font-family: var(--f-display); font-size: 28px; color: #fff; margin: 6px 0 0; }
 footer { padding: 28px 24px calc(28px + env(safe-area-inset-bottom, 0px)); text-align: center; font-size: 10.5px; background: var(--wine-deep); opacity: .9; }
+/* Thank You: two rings draw themselves, slide together, then the stone pops and sparkles. */
+.rings { display: block; width: 92px; height: 69px; margin: 0 auto 14px; overflow: visible; color: var(--gold); }
+.rings circle { fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-dasharray: 108 300; stroke-dashoffset: 0;
+  transition: stroke-dashoffset 1.6s cubic-bezier(.6,0,.2,1), transform 1.3s cubic-bezier(.2,.7,.2,1), opacity .2s; }
+.rings .r1 { transform: rotate(-90deg); transform-origin: 31px 33px; }
+.rings .r2 { transform: rotate(90deg); transform-origin: 49px 33px; transition-delay: .45s; }
+.rings .gem { fill: currentColor; transform-box: fill-box; transform-origin: 50% 100%; transition: transform .6s cubic-bezier(.3,1.6,.5,1) 1.7s, opacity .3s 1.7s; }
+.rings .spark { fill: none; stroke: currentColor; stroke-width: 1.2; stroke-linecap: round; opacity: 0; }
+.rv.pre[data-anim="rings"] { opacity: 1; transform: none; }
+.rings.pre circle { stroke-dashoffset: 140; opacity: 0; stroke-linecap: butt; }
+.rings.pre .r1 { transform: translateX(-9px) rotate(-90deg); }
+.rings.pre .r2 { transform: translateX(9px) rotate(90deg); }
+.rings.pre .gem { transform: scale(0); opacity: 0; }
+.rings:not(.pre) .spark { animation: twinkle 2.8s ease-in-out 2.3s infinite; }
+@keyframes twinkle { 0%, 100% { opacity: 0; } 15%, 35% { opacity: .9; } 50% { opacity: 0; } }
 footer .credit { margin-top: 6px; font-size: 10px; letter-spacing: .12em; opacity: .75; }
 footer .credit a { color: var(--gold); text-decoration: none; border-bottom: 1px solid rgba(233,217,198,.4); transition: border-color .2s, opacity .2s; }
 footer .credit a:hover { border-color: var(--gold); }
@@ -582,7 +597,12 @@ form .submit.loading::after { content: ""; position: absolute; inset: 0; margin:
 
   <!-- THANKS -->
   <section class="sec wine thanks">
-    <div class="bar"></div>
+    <svg class="rings rv" data-anim="rings" viewBox="0 -8 80 60" aria-hidden="true">
+      <circle class="r1" cx="31" cy="33" r="17"/>
+      <circle class="r2" cx="49" cy="33" r="17"/>
+      <path class="gem" d="M31 4.5l5 5-5 6-5-6z"/>
+      <path class="spark" d="M21 3l-3-3M41 3l3-3M31 -2v-4"/>
+    </svg>
     <h2 class="rv" data-anim="blur">Thank You</h2>
     <p class="rv">It would be a joy and an honor for us if you could attend and give us your blessings.</p>
     <div class="strip" id="strip"></div>
@@ -949,7 +969,13 @@ tag(".card, .event .day, .event dl, .event .actions");
 // would otherwise hide it from the observer and it would never reveal.
 let pending = [];
 if (!reduce) {
-  document.querySelectorAll(".rv").forEach(n => { if (n.getBoundingClientRect().top > innerHeight * .9) { n.classList.add("pre"); pending.push(n); } });
+  // Jump straight into the hidden state (no transition), so nothing animates "backwards" on load.
+  const hide = [...document.querySelectorAll(".rv")].filter(n => n.getBoundingClientRect().top > innerHeight * .9);
+  const all = hide.flatMap(n => [n, ...n.querySelectorAll("*")]);
+  all.forEach(n => n.style.transition = "none");
+  hide.forEach(n => { n.classList.add("pre"); pending.push(n); });
+  void document.body.offsetWidth;
+  all.forEach(n => n.style.transition = "");
 }
 function reveal(vh) {
   if (!pending.length) return;
