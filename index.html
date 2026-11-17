@@ -361,9 +361,8 @@ footer { padding: 28px 24px calc(28px + env(safe-area-inset-bottom, 0px)); text-
   <section class="sec wine" id="gift">
     <div class="ph gift-photo" data-photo="gift" data-label="Foto"></div>
     <h2 class="title rv" style="color:#fff">Wedding Gift</h2>
-    <p class="lead rv" style="margin-bottom:18px">Kehadiran dan doa restu Anda merupakan anugerah terindah bagi kami. Namun, apabila Anda tidak dapat hadir dan hendak memberikan tanda kasih kepada kami, Anda dapat menggunakan fitur di bawah ini.</p>
-    <button class="btn solid rv" id="giftToggle" aria-expanded="false" aria-controls="giftCards"><svg><use href="#i-gift"/></svg>Kirim Hadiah</button>
-    <div class="gift-cards" id="giftCards" hidden></div>
+    <p class="lead rv" style="margin-bottom:0">Kehadiran dan doa restu Anda merupakan anugerah terindah bagi kami. Namun, apabila Anda tidak dapat hadir dan hendak memberikan tanda kasih kepada kami, Anda dapat menggunakan fitur di bawah ini.</p>
+    <div class="gift-cards" id="giftCards"></div>
   </section>
 
   <!-- WISHES / RSVP -->
@@ -420,7 +419,7 @@ const CONFIG = {
   date: "2026-12-27T10:00:00+07:00",
 
   events: [
-    { name: "Akad Nikah", start: "2026-12-27T10:00:00+07:00", end: "2026-12-27T12:00:00+07:00", time: "10.00 WIB – selesai", place: "Sakha Ballroom, Royal Sentul Park", address: "Jl. Sentul Raya, Kadumangu, Kec. Babakan Madang, Kabupaten Bogor, Jawa Barat 16810", maps: "https://www.google.com/maps/search/?api=1&query=Sakha+Ballroom+Royal+Sentul+Park", photo: { src: "img/siluet-2.jpg", pos: "68% 30%" } },
+    { name: "Akad Nikah", start: "2026-12-27T10:00:00+07:00", end: "2026-12-27T12:00:00+07:00", time: "10.00 WIB – selesai", place: "Sakha Ballroom, Royal Sentul Park", address: "Jl. Sentul Raya, Kadumangu, Kec. Babakan Madang, Kabupaten Bogor, Jawa Barat 16810", maps: "https://www.google.com/maps/search/?api=1&query=Sakha+Ballroom+Royal+Sentul+Park", photo: { src: "img/akad.jpg", pos: "50% 34%" } },
     { name: "Resepsi",    start: "2026-12-27T13:00:00+07:00", end: "2026-12-27T17:00:00+07:00", time: "13.00 – 17.00 WIB",   place: "Sakha Ballroom, Royal Sentul Park", address: "Jl. Sentul Raya, Kadumangu, Kec. Babakan Madang, Kabupaten Bogor, Jawa Barat 16810", maps: "https://www.google.com/maps/search/?api=1&query=Sakha+Ballroom+Royal+Sentul+Park", photo: { src: "img/berdua.jpg", pos: "50% 25%" } }
   ],
   // Live streaming: isi mis. { when: "2026-12-27T10:00:00+07:00", url: "https://instagram.com/..." }. null = disembunyikan.
@@ -590,7 +589,6 @@ CONFIG.gifts.forEach(g => {
   c.append(copy); $("#giftCards").append(c);
 });
 if (!CONFIG.gifts.length) $("#gift").hidden = true;
-$("#giftToggle").addEventListener("click", e => { const box = $("#giftCards"); box.hidden = !box.hidden; e.currentTarget.setAttribute("aria-expanded", String(!box.hidden)); });
 
 /* ---- countdown ---- */
 (function tick() {
