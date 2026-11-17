@@ -1,36 +1,76 @@
-// Backend undangan Sifa & Yoga (Google Sheets): ucapan tamu + teks pesan WhatsApp.
-// Tab "Ucapan": ucapan tamu (hapus baris untuk menghapus ucapan).
-// Tab "Pesan WA": edit sel A2 untuk mengubah pesan WhatsApp. {nama} dan {link} diganti otomatis.
-// Setelah mengubah kode ini: Deploy > Manage deployments > Edit > Version: New version > Deploy.
-const SH='Ucapan',PS='Pesan WA';
-const DEF=`Assalamu'alaikum Warahmatullahi Wabarakatuh
+/**
+ * Backend ucapan & konfirmasi kehadiran (Google Sheets).
+ *
+ * Cara pasang (sekali saja):
+ * 1. Buat Google Sheet baru, mis. "Ucapan Sifa & Yoga".
+ * 2. Di Sheet itu: Extensions > Apps Script. Hapus isi Code.gs, tempel seluruh file ini, lalu Save.
+ * 3. Deploy > New deployment > pilih type "Web app".
+ *      Execute as: Me
+ *      Who has access: Anyone
+ *    Klik Deploy, izinkan akses (Authorize access), lalu salin "Web app URL" (berakhiran /exec).
+ * 4. Tempel URL itu ke CONFIG.rsvpEndpoint di index.html.
+ *
+ * Menghapus ucapan: hapus barisnya langsung di tab "Ucapan" pada Google Sheet.
+ * Jika file ini diubah, deploy ulang lewat Deploy > Manage deployments > Edit > Version: New version
+ * (URL tetap sama).
+ */
+const SHEET_NAME = 'Ucapan';
+const HEADER = ['ts', 'name', 'att', 'msg'];
 
-Kepada Yth.
-Bapak/Ibu/Saudara/i *{nama}*
+function sheet_() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sh = ss.getSheetByName(SHEET_NAME);
+  if (!sh) {
+    sh = ss.insertSheet(SHEET_NAME);
+    sh.appendRow(HEADER);
+    sh.setFrozenRows(1);
+  }
+  return sh;
+}
 
-Tanpa mengurangi rasa hormat, perkenankan kami mengundang Bapak/Ibu/Saudara/i untuk menghadiri acara pernikahan kami:
+function json_(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
+}
 
-*Sifa & Yoga*
-Minggu, 27 Desember 2026
-Sakha Ballroom, Royal Sentul Park
+// Daftar ucapan, terbaru di atas.
+function doGet() {
+  const sh = sheet_();
+  const last = sh.getLastRow();
+  if (last < 2) return json_([]);
+  const rows = sh.getRange(2, 1, last - 1, 4).getValues();
+  const data = rows
+    .filter(r => r[1] && r[3])
+    .map(r => ({ ts: Number(r[0]) || 0, name: String(r[1]), att: String(r[2]) === 'n' ? 'n' : 'y', msg: String(r[3]) }))
+    .sort((a, b) => b.ts - a.ts);
+  return json_(data);
+}
 
-Info lengkap acara dan konfirmasi kehadiran:
-{link}
+// Simpan satu ucapan baru.
+function doPost(e) {
+  let d;
+  try { d = JSON.parse(e.postData.contents); } catch (err) { return json_({ ok: false, error: 'invalid json' }); }
+  // Teks diawali = + - @ diberi tanda kutip agar tidak dibaca sebagai rumus oleh Sheets.
+  const clean = (s, n) => String(s || '').trim().slice(0, n).replace(/^[=+\-@]/, "'$&");
+  const name = clean(d.name, 60), msg = clean(d.msg, 500), att = d.att === 'n' ? 'n' : (d.att === 'y' ? 'y' : '');
+  if (!name || !msg || !att) return json_({ ok: false, error: 'missing fields' });
 
-Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa restu.
-
-Wassalamu'alaikum Warahmatullahi Wabarakatuh
-
-Kami yang berbahagia,
-Sifa & Yoga`;
-function sh_(){const s=SpreadsheetApp.getActiveSpreadsheet();let h=s.getSheetByName(SH);if(!h){h=s.insertSheet(SH);h.appendRow(['ts','name','att','msg']);}return h;}
-function ps_(){const s=SpreadsheetApp.getActiveSpreadsheet();let p=s.getSheetByName(PS);if(!p){p=s.insertSheet(PS);p.getRange('A1').setValue('Edit pesan WhatsApp di sel A2. {nama} = nama tamu, {link} = link undangan. Teks di antara *bintang* tampil tebal.').setFontWeight('bold');p.getRange('A2').setValue(DEF).setWrap(true).setVerticalAlignment('top');p.setColumnWidth(1,700);p.setRowHeight(2,520);}return p;}
-function out_(o){return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON);}
-function doGet(e){if(e&&e.parameter&&e.parameter.pesan){const t=String(ps_().getRange('A2').getValue()||'').trim();return out_({pesan:t||DEF});}
-const h=sh_(),n=h.getLastRow();if(n<2)return out_([]);return out_(h.getRange(2,1,n-1,4).getValues().filter(r=>r[1]&&r[3]).map(r=>({ts:+r[0]||0,name:String(r[1]),att:r[2]=='n'?'n':'y',msg:String(r[3])})).sort((a,b)=>b.ts-a.ts));}
-function doPost(e){let d;try{d=JSON.parse(e.postData.contents)}catch(x){return out_({ok:false})}
-const c=(s,n)=>String(s||'').trim().slice(0,n).replace(/^[=+\-@]/,"'$&");const nm=c(d.name,60),ms=c(d.msg,500),at=d.att=='n'?'n':d.att=='y'?'y':'';
-if(!nm||!ms||!at)return out_({ok:false});const l=LockService.getScriptLock();l.waitLock(10000);
-try{const h=sh_(),n=h.getLastRow();if(n>=2){const f=Math.max(2,n-19),r=h.getRange(f,1,n-f+1,4).getValues();if(r.some(x=>String(x[1])==nm&&String(x[3])==ms&&Date.now()-x[0]<120000))return out_({ok:true});}
-h.appendRow([Date.now(),nm,at,ms]);}finally{l.releaseLock()}return out_({ok:true});}
-function setup(){ps_();sh_();}
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    const sh = sheet_();
+    // Tolak kiriman ganda yang persis sama dalam 2 menit terakhir.
+    const last = sh.getLastRow();
+    if (last >= 2) {
+      const from = Math.max(2, last - 19);
+      const recent = sh.getRange(from, 1, last - from + 1, 4).getValues();
+      const now = Date.now();
+      if (recent.some(r => String(r[1]) === name && String(r[3]) === msg && now - Number(r[0]) < 120000)) {
+        return json_({ ok: true, duplicate: true });
+      }
+    }
+    sh.appendRow([Date.now(), name, att, msg]);
+  } finally {
+    lock.releaseLock();
+  }
+  return json_({ ok: true });
+}

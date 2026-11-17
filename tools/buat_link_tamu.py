@@ -1,10 +1,11 @@
-"""Buat satu file Excel daftar tamu: isi tab "Daftar Tamu", tab "Hasil Link" terisi otomatis.
+"""Buat file Excel daftar tamu (2 sheet): "Daftar Tamu" untuk input + hasil link, dan "Petunjuk".
 
   python tools/buat_link_tamu.py OUT.xlsx [--contoh "Nama" "08xx"]
 
-Tab "Hasil Link" memakai rumus saja, jadi langsung bekerja di Excel, Google Sheets dan Excel HP.
-Tombol "Kirim WA" mengarah ke /wa di situs undangan, yang menyusun pesan WhatsApp lalu membuka
-WhatsApp (link wa.me berisi pesan lengkap terlalu panjang untuk rumus HYPERLINK di Excel).
+Isi nama dan nomor WhatsApp; kolom link undangan dan tombol "Kirim WA" terisi otomatis lewat rumus,
+jadi langsung bekerja di Excel, Excel HP dan Google Sheets. Tombol "Kirim WA" mengarah ke /wa di situs
+undangan, yang menyusun pesan WhatsApp lalu membuka WhatsApp (link wa.me berisi pesan lengkap terlalu
+panjang untuk rumus HYPERLINK di Excel). Teks pesannya ada di wa.html.
 """
 import sys
 from openpyxl import Workbook
@@ -17,40 +18,64 @@ ROWS = 500
 
 WINE = "4A0F1C"
 F = "Arial"
-HEAD = Font(name=F, bold=True, color="FFFFFF", size=11)
-HEAD_FILL = PatternFill("solid", fgColor=WINE)
+HEAD_IN = PatternFill("solid", fgColor=WINE)          # columns to fill in
+HEAD_OUT = PatternFill("solid", fgColor="6F6264")     # automatic columns
 INPUT_FILL = PatternFill("solid", fgColor="FFF2CC")
 THIN = Side(style="thin", color="D9CBBB")
 BOX = Border(left=THIN, right=THIN, top=THIN, bottom=THIN)
 BODY = Font(name=F, size=11)
 
 
-def header(ws, cols):
-    for i, (title, width) in enumerate(cols, 1):
-        c = ws.cell(row=1, column=i, value=title)
-        c.font, c.fill, c.border = HEAD, HEAD_FILL, BOX
-        c.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
-        ws.column_dimensions[c.column_letter].width = width
-    ws.row_dimensions[1].height = 32
-    ws.freeze_panes = "A2"
-
-
 def build(out, example=None):
     wb = Workbook()
-
-    # ---- Daftar Tamu (input) ----
     d = wb.active
     d.title = "Daftar Tamu"
-    header(d, [("No", 6), ("Nama Tamu\n(tampil di undangan)", 42), ("No. WhatsApp", 20),
-               ("Kategori\n(opsional)", 18), ("Sudah dikirim?\n(isi: Ya)", 16)])
+    cols = [
+        ("No", 6, HEAD_OUT),
+        ("Nama Tamu\n(tampil di undangan)", 38, HEAD_IN),
+        ("No. WhatsApp", 18, HEAD_IN),
+        ("Kategori\n(opsional)", 16, HEAD_IN),
+        ("Sudah dikirim?", 14, HEAD_IN),
+        ("Kirim WA\n(otomatis)", 14, HEAD_OUT),
+        ("No. WA 62\n(otomatis)", 17, HEAD_OUT),
+        ("Link Undangan\n(otomatis)", 56, HEAD_OUT),
+    ]
+    for i, (title, width, fill) in enumerate(cols, 1):
+        c = d.cell(row=1, column=i, value=title)
+        c.font, c.fill, c.border = Font(name=F, bold=True, color="FFFFFF", size=11), fill, BOX
+        c.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
+        d.column_dimensions[c.column_letter].width = width
+    d.row_dimensions[1].height = 34
+    d.freeze_panes = "C2"
+
     for r in range(2, ROWS + 2):
-        d.cell(row=r, column=1, value=f'=IF(B{r}="","",ROW()-1)').font = BODY
-        for col in (2, 3, 4, 5):
+        name = f"TRIM(B{r})"
+        # URL-encode the characters that would break the query string; spaces become +.
+        enc = (f'SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE({name},"%","%25"),'
+               f'"&","%26"),"#","%23"),"+","%2B")," ","+")')
+        # Phone: drop spaces, dashes, dots, brackets and +, then 08.. -> 628.., 8.. -> 628..
+        digits = (f'SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE('
+                  f'TRIM(C{r})," ",""),"-",""),".",""),"(",""),")",""),"+","")')
+        blank = f'B{r}=""'
+        d.cell(row=r, column=1, value=f'=IF({blank},"",ROW()-1)')
+        d.cell(row=r, column=6, value=f'=IF({blank},"",HYPERLINK("{DOMAIN}/wa?n="&G{r}&"&to="&{enc},"Kirim WA"))')
+        d.cell(row=r, column=7, value=(f'=IF(OR({blank},C{r}=""),"",IF(LEFT({digits},1)="0","62"&MID({digits},2,30),'
+                                       f'IF(LEFT({digits},1)="8","62"&{digits},{digits})))'))
+        d.cell(row=r, column=8, value=f'=IF({blank},"",HYPERLINK("{DOMAIN}/?to="&{enc},"{DOMAIN}/?to="&{enc}))')
+        for col in range(1, 9):
             c = d.cell(row=r, column=col)
-            c.fill, c.border, c.font = INPUT_FILL, BOX, BODY
-        d.cell(row=r, column=3).number_format = "@"  # keep the leading 0
+            c.font, c.border = BODY, BOX
+            if col in (2, 3, 4, 5):
+                c.fill = INPUT_FILL
+        d.cell(row=r, column=3).number_format = "@"   # keep the leading 0
+        d.cell(row=r, column=7).number_format = "@"
+        d.cell(row=r, column=6).font = Font(name=F, size=11, bold=True, color="1F7A4D", underline="single")
+        d.cell(row=r, column=6).alignment = Alignment(horizontal="center")
+        d.cell(row=r, column=8).font = Font(name=F, size=10, color=WINE, underline="single")
+
     if example:
         d["B2"], d["C2"], d["D2"] = example[0], example[1], "Uji coba"
+
     dv = DataValidation(type="textLength", operator="lessThanOrEqual", formula1="80", allow_blank=True,
                         errorTitle="Nama terlalu panjang", error="Nama tamu maksimal 80 karakter.")
     d.add_data_validation(dv)
@@ -58,59 +83,27 @@ def build(out, example=None):
     sent = DataValidation(type="list", formula1='"Ya,Belum"', allow_blank=True)
     d.add_data_validation(sent)
     sent.add(f"E2:E{ROWS + 1}")
+    # Row turns green once marked as sent.
+    d.conditional_formatting.add(f"A2:H{ROWS + 1}",
+                                 FormulaRule(formula=['$E2="Ya"'], fill=PatternFill("solid", fgColor="E2F0E6")))
 
-    # ---- Hasil Link (formulas only) ----
-    h = wb.create_sheet("Hasil Link")
-    header(h, [("No", 6), ("Nama Tamu", 36), ("Kategori", 16), ("No. WA (62)", 18),
-               ("Kirim WA", 14), ("Link Undangan", 58), ("Sudah dikirim?", 14)])
-    src = "'Daftar Tamu'!"
-    for r in range(2, ROWS + 2):
-        name = f"TRIM({src}B{r})"
-        # URL-encode the characters that would break the query string; spaces become +.
-        enc = (f'SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE({name},"%","%25"),'
-               f'"&","%26"),"#","%23"),"+","%2B")," ","+")')
-        # Phone: drop spaces, dashes, dots, brackets and +, then 08.. -> 628.., 8.. -> 628..
-        digits = (f'SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE('
-                  f'TRIM({src}C{r})," ",""),"-",""),".",""),"(",""),")",""),"+","")')
-        blank = f'{src}B{r}=""'
-        h.cell(row=r, column=1, value=f'=IF({blank},"",ROW()-1)')
-        h.cell(row=r, column=2, value=f'=IF({blank},"",{name})')
-        h.cell(row=r, column=3, value=f'=IF({blank},"",{src}D{r}&"")')
-        h.cell(row=r, column=4, value=(f'=IF(OR({blank},{src}C{r}=""),"",IF(LEFT({digits},1)="0","62"&MID({digits},2,30),'
-                                       f'IF(LEFT({digits},1)="8","62"&{digits},{digits})))'))
-        h.cell(row=r, column=5, value=f'=IF({blank},"",HYPERLINK("{DOMAIN}/wa?n="&D{r}&"&to="&{enc},"Kirim WA"))')
-        h.cell(row=r, column=6, value=f'=IF({blank},"",HYPERLINK("{DOMAIN}/?to="&{enc},"{DOMAIN}/?to="&{enc}))')
-        h.cell(row=r, column=7, value=f'=IF({blank},"",IF({src}E{r}="","Belum",{src}E{r}))')
-        for col in range(1, 8):
-            c = h.cell(row=r, column=col)
-            c.font = BODY
-            c.border = BOX
-        h.cell(row=r, column=4).number_format = "@"
-        h.cell(row=r, column=5).font = Font(name=F, size=11, bold=True, color="1F7A4D", underline="single")
-        h.cell(row=r, column=5).alignment = Alignment(horizontal="center")
-        h.cell(row=r, column=6).font = Font(name=F, size=10, color=WINE, underline="single")
-    rng = f"A2:G{ROWS + 1}"
-    h.conditional_formatting.add(rng, FormulaRule(formula=['$G2="Ya"'], fill=PatternFill("solid", fgColor="E2F0E6")))
-
-    # ---- Petunjuk ----
     p = wb.create_sheet("Petunjuk")
     p.column_dimensions["A"].width = 105
     lines = [
         ("Cara pakai", True),
-        ("1. Buka tab 'Daftar Tamu' dan isi hanya sel berwarna kuning.", False),
+        ("1. Di sheet 'Daftar Tamu', isi kolom berwarna kuning (judul kolom maroon):", False),
         ("     - Nama Tamu: persis seperti yang ingin tampil di undangan, mis. 'Bapak Budi Santoso & Keluarga'.", False),
         ("     - No. WhatsApp: boleh 08xx, +62xx, atau pakai spasi/tanda hubung. Kosongkan jika tidak ada.", False),
         ("     - Kategori: opsional, mis. Keluarga / Kantor / Teman.", False),
-        ("2. Tab 'Hasil Link' terisi otomatis untuk setiap nama.", False),
-        ("3. Klik 'Kirim WA' di tab 'Hasil Link': WhatsApp terbuka ke nomor tamu dengan pesan undangan sudah terisi.", False),
+        ("2. Kolom berjudul abu-abu terisi otomatis: tombol 'Kirim WA', nomor WA format 62, dan link undangan.", False),
+        ("3. Klik 'Kirim WA': WhatsApp terbuka ke nomor tamu dengan pesan undangan sudah terisi, tinggal tekan kirim.", False),
         ("     Tamu tanpa nomor: WhatsApp meminta Anda memilih kontak.", False),
-        ("4. Setelah terkirim, isi 'Ya' di kolom 'Sudah dikirim?' pada tab 'Daftar Tamu'. Barisnya di 'Hasil Link' jadi hijau.", False),
+        ("4. Setelah terkirim, pilih 'Ya' di kolom 'Sudah dikirim?'. Baris tamu berubah hijau.", False),
         ("5. Baris 2 adalah uji coba dan boleh ditimpa. Kapasitas 500 tamu.", False),
         ("", False),
         ("Catatan", True),
-        ("- Jangan menyisipkan atau mengurutkan baris di 'Hasil Link'; cukup kelola daftar di tab 'Daftar Tamu'.", False),
-        ("- Teks pesan WhatsApp diedit di Google Sheet undangan (tab 'Pesan WA', sel A2), bukan di file ini.", False),
-        ("  Perubahan langsung dipakai tombol 'Kirim WA' berikutnya. {nama} = nama tamu, {link} = link undangan.", False),
+        ("- Jangan mengubah atau menghapus rumus di kolom berjudul abu-abu.", False),
+        ("- Teks pesan WhatsApp diatur di situs undangan. Hubungi pembuat undangan jika ingin mengubah teksnya.", False),
         ("- Bisa dibuka di Excel, Excel HP, maupun Google Sheets.", False),
     ]
     for i, (t, bold) in enumerate(lines, 1):
