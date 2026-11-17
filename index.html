@@ -828,7 +828,7 @@ async function renderWishes(newTs) {
   const sum = $("#summary");
   if (!all.length) sum.replaceChildren();
   else {
-    if (!sum.firstChild) sum.innerHTML = '<b data-k="y"></b> attending · <b data-k="n"></b> sending prayers · <b data-k="t"></b> <span data-k="w"></span>';
+    if (!sum.firstChild) sum.innerHTML = '<b data-k="y"></b> attending · <b data-k="n"></b> unable to attend · <b data-k="t"></b> <span data-k="w"></span>';
     const set = (k, v) => { const b = sum.querySelector(`[data-k="${k}"]`); if (lastCounts) bumpNum(b, v); else b.textContent = v; };
     set("y", y); set("n", n); set("t", all.length); sum.querySelector('[data-k="w"]').textContent = all.length === 1 ? "wish" : "wishes";
     lastCounts = { y, n };
@@ -840,7 +840,7 @@ async function renderWishes(newTs) {
     const li = el("li", w.ts === newTs ? "new" : null), name = prettyName(w.name.trim());
     const av = el("span", "av", (name[0] || "?").toUpperCase()); av.setAttribute("aria-hidden", "true");
     const tag = el("span", "tag " + w.att); tag.innerHTML = w.att === "y" ? '<svg><use href="#i-rings"/></svg>' : '<svg><use href="#i-pray"/></svg>';
-    tag.append(w.att === "y" ? "Attending" : "Sending prayers");
+    tag.append(w.att === "y" ? "Attending" : "Unable to attend");
     const who = el("div", "who"); who.append(el("strong", null, name), tag);
     const t = el("time", null, ago(w.ts)); t.dateTime = new Date(w.ts).toISOString();
     const body = el("div", "body"); body.append(who, el("p", null, w.msg), t);
