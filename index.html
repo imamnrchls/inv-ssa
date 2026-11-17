@@ -107,7 +107,10 @@ p { margin: 0; }
   transition: transform 1.1s cubic-bezier(.7,0,.2,1), opacity 1.1s;
 }
 .cover .ph { position: absolute; inset: 0; z-index: -2; }
-.cover::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(to top, rgba(18,10,13,.97) 25%, rgba(18,10,13,.35) 70%, rgba(18,10,13,.2)); }
+.cover .ph.has-img { background: #000; }
+.cover .ph .ph-img { background-repeat: no-repeat; }
+@media (max-height: 700px) { .cover .ph .ph-img { background-size: auto 70% !important; } }
+.cover::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(to top, rgba(0,0,0,.94) 16%, rgba(0,0,0,.45) 40%, transparent 60%); }
 .cover.gone { transform: translateY(-100%); opacity: 0; pointer-events: none; }
 .cover .to { margin-top: 32px; font-size: 11px; letter-spacing: .1em; }
 .cover .guest { font-family: var(--f-display); font-size: 22px; color: #fff; margin: 4px 0 18px; overflow-wrap: anywhere; }
@@ -620,7 +623,7 @@ const CONFIG = {
 
   // Foto: path string, atau { src, pos, size } — pos = titik fokus, size = zoom (mis. "150%")
   photos: {
-    cover: { src: "img/akad.jpg", pos: "55% 30%" },
+    cover: { src: "img/cover-siluet.jpg", pos: "50% 0%", size: "auto 84%" }, // black-background photo: shrunk so the circle sits above the text
     side:  { src: "img/siluet-1.jpg", pos: "60% 40%" },
     hero:  { src: "img/berdua.jpg",   pos: "56% 30%" },
     story: { src: "img/lingkaran.jpg", pos: "50% 52%" },
