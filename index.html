@@ -804,11 +804,16 @@ if (!CONFIG.gifts.length) $("#gift").hidden = true;
 const KEY = "undangan-ucapan";
 const store = {
   async list() {
-    if (CONFIG.rsvpEndpoint) { const r = await fetch(CONFIG.rsvpEndpoint); return r.json(); }
+    if (CONFIG.rsvpEndpoint) {
+      const r = await fetch(CONFIG.rsvpEndpoint + (CONFIG.rsvpEndpoint.includes("?") ? "&" : "?") + "t=" + Date.now(), { cache: "no-store" });
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      const d = await r.json(); if (!Array.isArray(d)) throw new Error("bad data"); return d;
+    }
     try { return JSON.parse(localStorage.getItem(KEY)) || []; } catch { return []; }
   },
   async add(item) {
-    if (CONFIG.rsvpEndpoint) { await fetch(CONFIG.rsvpEndpoint, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(item) }); return; }
+    // no-cors: Apps Script answers through a redirect; the row is saved either way, and we re-read the list after.
+    if (CONFIG.rsvpEndpoint) { await fetch(CONFIG.rsvpEndpoint, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(item) }); return; }
     const all = await this.list(); all.unshift(item); try { localStorage.setItem(KEY, JSON.stringify(all)); } catch {}
   }
 };
@@ -850,6 +855,11 @@ async function renderWishes(newTs) {
   more.hidden = left <= 0; more.textContent = `Show more wishes (${left})`;
 }
 $("#more").addEventListener("click", () => { shown += PAGE; renderWishes(); });
+// With a shared backend, pick up other guests' wishes while the page stays open.
+if (CONFIG.rsvpEndpoint) {
+  setInterval(() => { if (!document.hidden) renderWishes(); }, 60000);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) renderWishes(); });
+}
 
 /* ---- form: counter + per-field validation ---- */
 const fName = $("#f-name"), fMsg = $("#f-msg"), fAtt = $("#f-att");
