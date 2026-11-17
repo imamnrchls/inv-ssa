@@ -11,6 +11,13 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="manifest" href="site.webmanifest">
 <meta name="theme-color" content="#4a0f1c">
+<meta property="og:type" content="website">
+<meta property="og:title" content="The Wedding of Sifa & Yoga">
+<meta property="og:description" content="Minggu, 27 Desember 2026 · Sakha Ballroom, Royal Sentul Park. Kami mengundang Anda untuk hadir dan memberikan doa restu.">
+<meta property="og:image" content="https://inv-ssa.vercel.app/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400&family=Pinyon+Script&family=Poppins:wght@300;400;500;600&display=swap">
@@ -678,7 +685,10 @@ document.title = `The Wedding of ${A.nick} & ${B.nick}`;
 document.querySelectorAll("[data-photo]").forEach(n => setPhoto(n, CONFIG.photos[n.dataset.photo]));
 
 /* ---- guest name: ?to=Nama+Tamu ---- */
-try { const g = new URLSearchParams(location.search).get("to") || new URLSearchParams(location.search).get("kepada"); if (g) $("#guest").textContent = g.slice(0, 80); } catch {}
+try {
+  const q = new URLSearchParams(location.search), g = (q.get("to") || q.get("kepada") || "").trim().slice(0, 80);
+  if (g) { $("#guest").textContent = g; $("#f-name").value = g; } // also prefill the wishes form
+} catch {}
 
 /* ---- couple ---- */
 function person(p, label) {
