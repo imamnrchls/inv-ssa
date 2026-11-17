@@ -171,6 +171,7 @@ p { margin: 0; }
 .gallery button.wide { grid-column: span 2; aspect-ratio: 4/3; }
 .lightbox { position: fixed; inset: 0; z-index: 70; background: rgba(10,4,6,.94); display: grid; place-items: center; padding: 24px; }
 .lightbox .ph { width: min(420px, 90vw); aspect-ratio: 3/4; border-radius: 8px; }
+.lightbox img { max-width: 100%; max-height: 88vh; border-radius: 6px; object-fit: contain; }
 .lightbox button { position: absolute; top: calc(16px + env(safe-area-inset-top, 0px)); right: calc(16px + env(safe-area-inset-right, 0px)); background: none; border: 1px solid var(--line); color: var(--gold); border-radius: 50%; width: 38px; height: 38px; cursor: pointer; font-size: 18px; }
 
 /* ---------- gift ---------- */
@@ -403,16 +404,16 @@ footer { padding: 28px 24px calc(28px + env(safe-area-inset-bottom, 0px)); text-
    Foto: isi path/URL gambar (mis. "img/cover.jpg"). Kosongkan "" untuk placeholder.
    ===================================================================== */
 const CONFIG = {
-  groom: { nick: "Yoga", full: "Yoga Refnu Pangestu", order: "Putra dari", parents: "Bapak Saefudin (Alm.) & Ibu Inih Tarsinih (Almh.)", ig: "", photo: "" },
-  bride: { nick: "Sifa", full: "Sifa Silfia Annurburhan", order: "Putri dari", parents: "Bapak Burhanudin & Ibu Yulianis", ig: "", photo: "" },
+  groom: { nick: "Yoga", full: "Yoga Refnu Pangestu", order: "Putra dari", parents: "Bapak Saefudin (Alm.) & Ibu Inih Tarsinih (Almh.)", ig: "", photo: { src: "img/yoga.jpg", pos: "28% 20%" } },
+  bride: { nick: "Sifa", full: "Sifa Silfia Annurburhan", order: "Putri dari", parents: "Bapak Burhanudin & Ibu Yulianis", ig: "", photo: { src: "img/sifa.jpg", pos: "45% 20%" } },
   brideFirst: true, // urutan tampil: mempelai wanita dulu (seperti referensi)
 
   // Tanggal utama untuk hitung mundur (zona waktu WIB = +07:00)
   date: "2026-12-27T10:00:00+07:00",
 
   events: [
-    { name: "Akad Nikah", start: "2026-12-27T10:00:00+07:00", time: "10.00 WIB – selesai", place: "Sakha Ballroom, Royal Sentul Park", address: "Jl. Sentul Raya, Kadumangu, Kec. Babakan Madang, Kabupaten Bogor, Jawa Barat 16810", maps: "https://www.google.com/maps/search/?api=1&query=Sakha+Ballroom+Royal+Sentul+Park", photo: "" },
-    { name: "Resepsi",    start: "2026-12-27T13:00:00+07:00", time: "13.00 – 17.00 WIB",   place: "Sakha Ballroom, Royal Sentul Park", address: "Jl. Sentul Raya, Kadumangu, Kec. Babakan Madang, Kabupaten Bogor, Jawa Barat 16810", maps: "https://www.google.com/maps/search/?api=1&query=Sakha+Ballroom+Royal+Sentul+Park", photo: "" }
+    { name: "Akad Nikah", start: "2026-12-27T10:00:00+07:00", time: "10.00 WIB – selesai", place: "Sakha Ballroom, Royal Sentul Park", address: "Jl. Sentul Raya, Kadumangu, Kec. Babakan Madang, Kabupaten Bogor, Jawa Barat 16810", maps: "https://www.google.com/maps/search/?api=1&query=Sakha+Ballroom+Royal+Sentul+Park", photo: { src: "img/siluet-2.jpg", pos: "68% 30%" } },
+    { name: "Resepsi",    start: "2026-12-27T13:00:00+07:00", time: "13.00 – 17.00 WIB",   place: "Sakha Ballroom, Royal Sentul Park", address: "Jl. Sentul Raya, Kadumangu, Kec. Babakan Madang, Kabupaten Bogor, Jawa Barat 16810", maps: "https://www.google.com/maps/search/?api=1&query=Sakha+Ballroom+Royal+Sentul+Park", photo: { src: "img/berdua.jpg", pos: "50% 25%" } }
   ],
   // Live streaming: isi mis. { when: "2026-12-27T10:00:00+07:00", url: "https://instagram.com/..." }. null = disembunyikan.
   stream: null,
@@ -427,10 +428,24 @@ const CONFIG = {
   // Wedding gift: isi daftar rekening/alamat. Kosong [] = bagian Wedding Gift disembunyikan. Contoh:
   // { type: "bank", brand: "BCA", number: "1234567890", name: "Sifa Silfia Annurburhan" },
   // { type: "address", name: "Sifa", phone: "08xxxxxxxxxx", address: "Alamat lengkap" }
-  gifts: [],
+  gifts: [
+    { type: "bank", brand: "BCA", number: "6380231288", name: "Sifa Silfia Annurburhan" },
+    { type: "bank", brand: "BCA", number: "3020648430", name: "Yoga Refnu Pangestu" }
+  ],
 
-  photos: { cover: "", side: "", hero: "", story: "", gift: "", wish: "" },
-  gallery: ["", "", "", "", "", ""], // isi URL foto; jumlah bebas
+  // Foto: path string, atau { src, pos } untuk mengatur titik fokus (background-position)
+  photos: {
+    cover: { src: "img/siluet-2.jpg", pos: "70% 40%" },
+    side:  { src: "img/siluet-1.jpg", pos: "60% 40%" },
+    hero:  { src: "img/berdua.jpg",   pos: "55% 22%" },
+    story: { src: "img/lingkaran.jpg", pos: "50% 52%" },
+    gift:  { src: "img/siluet-1.jpg", pos: "72% 35%" },
+    wish:  { src: "img/berdua.jpg",   pos: "50% 22%" }
+  },
+  gallery: [ // jumlah bebas; foto ke-1, 6, 11, ... tampil lebar
+    { src: "img/siluet-1.jpg", pos: "60% 40%" }, "img/berdua.jpg", "img/sifa.jpg",
+    { src: "img/lingkaran.jpg", pos: "50% 55%" }, { src: "img/siluet-2.jpg", pos: "70% 40%" }
+  ],
   music: "", // URL/ path mp3, mis. "audio/lagu.mp3". Kosong = tombol musik disembunyikan.
 
   // Opsional: URL Web App Google Apps Script (lihat apps-script.gs) agar ucapan tersimpan
@@ -442,7 +457,8 @@ const CONFIG = {
 const $ = (s, r = document) => r.querySelector(s);
 const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
 const fmtDay = iso => new Date(iso).toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Jakarta" });
-const setPhoto = (node, url) => { if (url) { node.style.backgroundImage = `url("${url}")`; node.classList.add("has-img"); } };
+const srcOf = u => (u && typeof u === "object") ? u.src : u;
+const setPhoto = (node, u) => { const src = srcOf(u); if (!src) return; node.style.backgroundImage = `url("${src}")`; if (u.pos) node.style.backgroundPosition = u.pos; node.classList.add("has-img"); };
 const ph = (label, url, extra = "") => { const d = el("div", ("ph " + extra).trim()); d.dataset.label = label; setPhoto(d, url); return d; };
 
 function toast(msg) { const t = $("#toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove("show"), 1800); }
@@ -491,12 +507,12 @@ if (CONFIG.stream && CONFIG.stream.url) $("#streamLink").href = CONFIG.stream.ur
 
 /* ---- gallery + lightbox ---- */
 CONFIG.gallery.forEach((url, i) => {
-  const b = el("button", "ph" + (i % 5 === 0 ? " wide" : "")); b.dataset.label = "Foto " + (i + 1); setPhoto(b, url);
+  const b = el("button", "ph" + (i % 5 === 0 && i < CONFIG.gallery.length - 1 ? " wide" : "")); b.dataset.label = "Foto " + (i + 1); setPhoto(b, url);
   b.setAttribute("aria-label", "Lihat foto " + (i + 1));
   b.addEventListener("click", () => {
     const lb = el("div", "lightbox"); lb.setAttribute("role", "dialog"); lb.setAttribute("aria-modal", "true");
     const x = el("button", null, "×"); x.setAttribute("aria-label", "Tutup");
-    lb.append(ph("Foto " + (i + 1), url), x); document.body.append(lb); x.focus();
+    if (srcOf(url)) { const im = el("img"); im.src = srcOf(url); im.alt = "Foto " + (i + 1); lb.append(im, x); } else lb.append(ph("Foto " + (i + 1), url), x); document.body.append(lb); x.focus();
     const close = () => { lb.remove(); b.focus(); document.removeEventListener("keydown", esc); };
     const esc = e => { if (e.key === "Escape") close(); };
     lb.addEventListener("click", e => { if (e.target === lb || e.target === x) close(); }); document.addEventListener("keydown", esc);
