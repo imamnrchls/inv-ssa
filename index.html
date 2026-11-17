@@ -889,7 +889,8 @@ async function renderWishes(newTs) {
   }
   ul.replaceChildren();
   if (!all.length) { ul.append(el("li", "empty", "No wishes yet. Be the first to send your prayers.")); more.hidden = true; return; }
-  const sorted = all.sort((a, b) => b.ts - a.ts);
+  // Wishes with a message first, then RSVP-only entries; newest first within each group.
+  const sorted = all.sort((a, b) => (isNoMsg(a.msg) - isNoMsg(b.msg)) || b.ts - a.ts);
   sorted.slice(0, shown).forEach(w => {
     const li = el("li", w.ts === newTs ? "new" : null), name = prettyName(w.name.trim());
     const av = el("span", "av", (name[0] || "?").toUpperCase()); av.setAttribute("aria-hidden", "true");
